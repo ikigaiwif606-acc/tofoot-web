@@ -5,6 +5,7 @@ import { useState } from "react";
 
 const navLinks = [
   { href: "/", label: "首頁", labelEn: "Home" },
+  { href: "/fantasy", label: "🏆 夢幻足球", labelEn: "Fantasy" },
   { href: "/videos", label: "影片", labelEn: "Videos" },
   { href: "/blog", label: "文章", labelEn: "Blog" },
   { href: "/about", label: "關於", labelEn: "About" },

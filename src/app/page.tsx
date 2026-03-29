@@ -2,6 +2,7 @@ import Link from "next/link";
 import VideoCard from "@/components/VideoCard";
 import BlogCard from "@/components/BlogCard";
 import NewsletterForm from "@/components/NewsletterForm";
+import CountdownTimer from "@/components/fantasy/CountdownTimer";
 import { videos, blogPosts } from "@/lib/data";
 
 export default function Home() {
@@ -81,28 +82,25 @@ export default function Home() {
         </div>
       </section>
 
-      {/* World Cup Countdown */}
+      {/* World Cup Countdown + Fantasy CTA */}
       <section className="border-y border-card-border bg-card-bg">
         <div className="mx-auto max-w-6xl px-4 py-16 text-center sm:px-6">
           <h2 className="text-2xl font-bold sm:text-3xl">
             🏆 2026 世界盃倒數
           </h2>
           <p className="mt-2 text-muted">FIFA World Cup 2026 — USA, Mexico, Canada</p>
-          <div className="mt-8 flex justify-center gap-4 sm:gap-8">
-            {[
-              { value: "80", label: "天 Days" },
-              { value: "12", label: "時 Hrs" },
-              { value: "34", label: "分 Min" },
-            ].map((item) => (
-              <div key={item.label} className="rounded-xl border border-card-border bg-background px-6 py-4 sm:px-10 sm:py-6">
-                <div className="text-3xl font-bold text-accent sm:text-5xl">{item.value}</div>
-                <div className="mt-1 text-xs text-muted sm:text-sm">{item.label}</div>
-              </div>
-            ))}
+          <div className="mt-8">
+            <CountdownTimer />
           </div>
           <p className="mt-6 text-sm text-muted">
             跟著 ToFoot 一起準備世界盃！每週更新各隊分析和預測。
           </p>
+          <Link
+            href="/fantasy"
+            className="mt-6 inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 font-semibold text-black transition-colors hover:bg-accent-dark"
+          >
+            🏆 加入夢幻足球預測遊戲
+          </Link>
         </div>
       </section>
 
