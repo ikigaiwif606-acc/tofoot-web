@@ -33,7 +33,10 @@ export default function Home() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-red-700"
             >
-              ▶ YouTube 頻道
+              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+              </svg>
+              YouTube 頻道
             </a>
             <Link
               href="/videos"
@@ -44,24 +47,29 @@ export default function Home() {
           </div>
 
           {/* Stats */}
-          <div className="animate-fade-in-delay-2 mt-14 grid grid-cols-3 gap-6 rounded-xl border border-card-border bg-card-bg p-6 sm:max-w-md">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-accent">2.5K+</div>
-              <div className="mt-1 text-xs text-muted">訂閱者</div>
+          <div className="animate-fade-in-delay-2 mt-14 rounded-xl border border-card-border bg-card-bg p-6 sm:max-w-md">
+            <div className="grid grid-cols-3 gap-6">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-accent">2.5K+</div>
+                <div className="mt-1 text-xs text-muted">訂閱者</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-accent">49</div>
+                <div className="mt-1 text-xs text-muted">影片</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-accent">26K+</div>
+                <div className="mt-1 text-xs text-muted">觀看次數</div>
+              </div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-accent">49</div>
-              <div className="mt-1 text-xs text-muted">影片</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-accent">26K+</div>
-              <div className="mt-1 text-xs text-muted">觀看次數</div>
+            <div className="mt-3 text-center text-[10px] text-muted/60">
+              最後更新：2026年3月
             </div>
           </div>
         </div>
       </section>
 
-      {/* Latest Videos */}
+      {/* Featured Video Embed */}
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
         <div className="flex items-end justify-between">
           <div>
@@ -75,8 +83,27 @@ export default function Home() {
             查看全部 →
           </Link>
         </div>
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {videos.slice(0, 3).map((video) => (
+
+        {/* Hero video embed */}
+        <div className="mt-8 overflow-hidden rounded-xl border border-card-border bg-card-bg">
+          <div className="relative aspect-video">
+            <iframe
+              src={`https://www.youtube.com/embed/${videos[0].youtubeId}`}
+              title={videos[0].title}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="absolute inset-0 h-full w-full"
+            />
+          </div>
+          <div className="p-4">
+            <h3 className="font-bold text-lg">{videos[0].title}</h3>
+            <p className="mt-1 text-sm text-muted">{videos[0].description}</p>
+          </div>
+        </div>
+
+        {/* More videos */}
+        <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {videos.slice(1, 4).map((video) => (
             <VideoCard key={video.id} video={video} />
           ))}
         </div>
@@ -92,7 +119,20 @@ export default function Home() {
           <div className="mt-8">
             <CountdownTimer />
           </div>
-          <p className="mt-6 text-sm text-muted">
+
+          {/* Fan counter (D1) */}
+          <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent/5 px-4 py-2">
+            <div className="flex -space-x-1.5">
+              <span className="text-sm">⚽</span>
+              <span className="text-sm">🇫🇷</span>
+              <span className="text-sm">🇹🇼</span>
+            </div>
+            <span className="text-sm text-muted">
+              已有 <span className="font-semibold text-accent">150+</span> 位球迷加入預測
+            </span>
+          </div>
+
+          <p className="mt-4 text-sm text-muted">
             跟著 ToFoot 一起準備世界盃！每週更新各隊分析和預測。
           </p>
           <Link

@@ -7,6 +7,32 @@ import { getUser, getPredictions, clearUser } from "@/lib/fantasy-store";
 import { calculateScore } from "@/lib/scoring";
 import type { Prediction } from "@/lib/fantasy-data";
 
+function calculateStreak(predictions: Prediction[]): { current: number; best: number } {
+  const scored = predictions
+    .map((pred) => {
+      const match = worldCupMatches.find((m) => m.id === pred.matchId);
+      if (!match || match.status !== "finished") return null;
+      const score = calculateScore(pred, match);
+      return score.points > 0;
+    })
+    .filter((v): v is boolean => v !== null);
+
+  let current = 0;
+  for (let i = scored.length - 1; i >= 0; i--) {
+    if (scored[i]) current++;
+    else break;
+  }
+
+  let best = 0;
+  let run = 0;
+  for (const correct of scored) {
+    if (correct) { run++; best = Math.max(best, run); }
+    else run = 0;
+  }
+
+  return { current, best };
+}
+
 export default function DashboardPage() {
   const [user, setUser] = useState<{ name: string } | null>(null);
   const [predictions, setPredictions] = useState<Prediction[]>([]);
@@ -47,9 +73,6 @@ export default function DashboardPage() {
   const exactScores = predictionsWithScores.filter(
     (p) => p.score?.type === "exact"
   ).length;
-  const correctResults = predictionsWithScores.filter(
-    (p) => p.score?.type === "result" || p.score?.type === "difference"
-  ).length;
   const scoredPredictions = predictionsWithScores.filter(
     (p) => p.match?.status === "finished"
   );
@@ -61,6 +84,8 @@ export default function DashboardPage() {
             100
         )
       : 0;
+
+  const streak = calculateStreak(predictions);
 
   const handleLogout = () => {
     clearUser();
@@ -91,7 +116,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Stats */}
-        <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-5">
           <div className="rounded-xl border border-card-border bg-card-bg p-4 text-center">
             <div className="text-3xl font-bold text-accent">{totalPoints}</div>
             <div className="mt-1 text-xs text-muted">總積分</div>
@@ -112,7 +137,29 @@ export default function DashboardPage() {
             <div className="text-3xl font-bold text-blue-400">{accuracy}%</div>
             <div className="mt-1 text-xs text-muted">正確率</div>
           </div>
+          <div className="col-span-2 rounded-xl border border-card-border bg-card-bg p-4 text-center sm:col-span-1">
+            <div className="text-3xl font-bold text-orange-400">{streak.current}</div>
+            <div className="mt-1 text-xs text-muted">
+              連續正確
+              {streak.best > streak.current && (
+                <span className="block text-[10px]">最佳: {streak.best}</span>
+              )}
+            </div>
+          </div>
         </div>
+
+        {/* Streak badge */}
+        {streak.current >= 2 && (
+          <div className="mt-4 flex justify-center">
+            <div className="inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-orange-500/10 px-4 py-2 text-sm">
+              <span>🔥</span>
+              <span className="font-semibold text-orange-400">
+                {streak.current} 連勝！
+              </span>
+              <span className="text-muted">繼續保持！</span>
+            </div>
+          </div>
+        )}
 
         {/* Prediction history */}
         <div className="mt-10">

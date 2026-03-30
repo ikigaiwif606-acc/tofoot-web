@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 const navLinks = [
@@ -11,8 +12,14 @@ const navLinks = [
   { href: "/about", label: "關於", labelEn: "About" },
 ];
 
+function isActive(pathname: string, href: string) {
+  if (href === "/") return pathname === "/";
+  return pathname.startsWith(href);
+}
+
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
     <header className="sticky top-0 z-50 border-b border-card-border bg-background/80 backdrop-blur-md">
@@ -29,7 +36,11 @@ export default function Header() {
             <Link
               key={link.href}
               href={link.href}
-              className="rounded-lg px-4 py-2 text-sm font-medium text-muted transition-colors hover:bg-card-bg hover:text-foreground"
+              className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                isActive(pathname, link.href)
+                  ? "bg-accent/10 text-accent"
+                  : "text-muted hover:bg-card-bg hover:text-foreground"
+              }`}
             >
               {link.label}
             </Link>
@@ -38,9 +49,12 @@ export default function Header() {
             href="https://www.youtube.com/@ToFootwn"
             target="_blank"
             rel="noopener noreferrer"
-            className="ml-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700"
+            className="ml-2 inline-flex items-center gap-1.5 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700"
           >
-            YouTube ▶
+            <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+            </svg>
+            YouTube
           </a>
         </nav>
 
@@ -66,7 +80,11 @@ export default function Header() {
               key={link.href}
               href={link.href}
               onClick={() => setMobileOpen(false)}
-              className="block rounded-lg px-4 py-3 text-sm font-medium text-muted transition-colors hover:bg-card-bg hover:text-foreground"
+              className={`block rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
+                isActive(pathname, link.href)
+                  ? "bg-accent/10 text-accent"
+                  : "text-muted hover:bg-card-bg hover:text-foreground"
+              }`}
             >
               {link.label}
             </Link>
@@ -75,9 +93,12 @@ export default function Header() {
             href="https://www.youtube.com/@ToFootwn"
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-2 block rounded-lg bg-red-600 px-4 py-3 text-center text-sm font-medium text-white"
+            className="mt-2 flex items-center justify-center gap-1.5 rounded-lg bg-red-600 px-4 py-3 text-center text-sm font-medium text-white"
           >
-            YouTube ▶
+            <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+            </svg>
+            YouTube
           </a>
         </nav>
       )}

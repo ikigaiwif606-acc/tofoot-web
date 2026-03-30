@@ -17,14 +17,23 @@ const categoryLabels: Record<string, string> = {
 export default function VideoCard({ video }: { video: Video }) {
   return (
     <a
-      href={`https://www.youtube.com/@ToFootwn`}
+      href={`https://www.youtube.com/watch?v=${video.youtubeId}`}
       target="_blank"
       rel="noopener noreferrer"
       className="group overflow-hidden rounded-xl border border-card-border bg-card-bg transition-all hover:border-accent/50 hover:shadow-lg hover:shadow-accent/5"
     >
-      <div className="relative aspect-video bg-gray-800">
-        <div className="flex h-full items-center justify-center text-6xl opacity-60 group-hover:opacity-100 transition-opacity">
-          ▶
+      <div className="relative aspect-video bg-gray-800 overflow-hidden">
+        <img
+          src={`https://img.youtube.com/vi/${video.youtubeId}/mqdefault.jpg`}
+          alt={video.title}
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-red-600/90 text-white">
+            <svg className="h-6 w-6 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </div>
         </div>
         <div className="absolute bottom-2 right-2 rounded bg-black/80 px-2 py-0.5 text-xs font-mono text-white">
           {video.duration}

@@ -36,6 +36,12 @@ export default function MatchesPage() {
       ? currentMatches
       : currentMatches.filter((m) => m.group === groupFilter);
 
+  // Count matches closing within 24h
+  const urgentCount = upcoming.filter((m) => {
+    const diff = new Date(m.kickoff).getTime() - Date.now();
+    return diff > 0 && diff < 24 * 60 * 60 * 1000;
+  }).length;
+
   return (
     <main className="flex-1">
       <section className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
@@ -58,6 +64,16 @@ export default function MatchesPage() {
           </div>
         ) : (
           <>
+            {/* Urgent deadline warning */}
+            {urgentCount > 0 && tab === "upcoming" && (
+              <div className="mt-6 flex items-center gap-3 rounded-lg border border-orange-500/30 bg-orange-500/10 px-4 py-3 text-sm">
+                <span className="animate-pulse-soft text-lg">⏰</span>
+                <span className="text-orange-400">
+                  <strong>{urgentCount}</strong> 場比賽即將在 24 小時內截止預測！
+                </span>
+              </div>
+            )}
+
             {/* Tabs */}
             <div className="mt-8 flex gap-2">
               <button

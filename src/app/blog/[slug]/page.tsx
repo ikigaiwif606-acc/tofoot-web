@@ -16,6 +16,83 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
   };
 }
 
+function renderContent(content: string) {
+  const lines = content.split("\n");
+  const elements: React.ReactNode[] = [];
+  let listItems: string[] = [];
+
+  const flushList = () => {
+    if (listItems.length > 0) {
+      elements.push(
+        <ul key={`list-${elements.length}`} className="my-4 space-y-2 pl-6 list-disc text-muted">
+          {listItems.map((item, i) => (
+            <li key={i} className="leading-relaxed">
+              {item.includes("**") ? (
+                <span>
+                  <strong className="text-foreground">
+                    {item.match(/\*\*(.*?)\*\*/)?.[1]}
+                  </strong>
+                  {item.replace(/\*\*.*?\*\*/, "")}
+                </span>
+              ) : (
+                item
+              )}
+            </li>
+          ))}
+        </ul>
+      );
+      listItems = [];
+    }
+  };
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmed = line.trim();
+
+    if (trimmed.startsWith("## ")) {
+      flushList();
+      elements.push(
+        <h2
+          key={`h2-${i}`}
+          className="mt-10 mb-4 text-xl font-bold text-foreground sm:text-2xl"
+        >
+          {trimmed.slice(3)}
+        </h2>
+      );
+    } else if (trimmed.startsWith("- ")) {
+      listItems.push(trimmed.slice(2));
+    } else if (trimmed.match(/^\d+\.\s/)) {
+      listItems.push(trimmed.replace(/^\d+\.\s/, ""));
+    } else if (trimmed === "") {
+      flushList();
+    } else {
+      flushList();
+      elements.push(
+        <p key={`p-${i}`} className="my-4 leading-relaxed text-muted">
+          {trimmed.includes("**") ? (
+            <>
+              {trimmed.split(/(\*\*.*?\*\*)/).map((part, j) =>
+                part.startsWith("**") && part.endsWith("**") ? (
+                  <strong key={j} className="text-foreground">
+                    {part.slice(2, -2)}
+                  </strong>
+                ) : (
+                  <span key={j}>{part}</span>
+                )
+              )}
+            </>
+          ) : (
+            trimmed
+          )}
+        </p>
+      );
+    }
+  }
+
+  flushList();
+  return elements;
+}
+
 export default function BlogPostPage({ params }: { params: { slug: string } }) {
   const post = blogPosts.find((p) => p.slug === params.slug);
   if (!post) notFound();
@@ -41,13 +118,8 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
           <p className="mt-4 text-lg text-muted">{post.excerpt}</p>
         </div>
 
-        <div className="mt-10 rounded-xl border border-card-border bg-card-bg p-8 text-center">
-          <p className="text-lg text-muted">
-            完整文章即將發布，敬請期待！
-          </p>
-          <p className="mt-2 text-sm text-muted">
-            Full article coming soon. Stay tuned!
-          </p>
+        <div className="mt-8 border-t border-card-border pt-8">
+          {renderContent(post.content)}
         </div>
 
         <div className="mt-12">
