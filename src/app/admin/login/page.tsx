@@ -1,10 +1,18 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { login } from "../actions";
 
 export default function AdminLoginPage() {
+  const router = useRouter();
   const [state, formAction, pending] = useActionState(login, { error: "" });
+
+  useEffect(() => {
+    if (state.success) {
+      router.push("/admin");
+    }
+  }, [state.success, router]);
 
   return (
     <div className="flex min-h-screen items-center justify-center">

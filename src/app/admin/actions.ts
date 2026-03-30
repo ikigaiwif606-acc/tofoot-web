@@ -10,15 +10,15 @@ import { calculateScore } from "@/lib/scoring";
 // ---- Auth ----
 
 export async function login(
-  _prev: { error: string },
+  _prev: { error: string; success?: boolean },
   formData: FormData
-): Promise<{ error: string }> {
+): Promise<{ error: string; success?: boolean }> {
   const password = formData.get("password") as string;
   if (password !== process.env.ADMIN_PASSWORD) {
     return { error: "Incorrect password" };
   }
   await createAdminSession();
-  redirect("/admin");
+  return { error: "", success: true };
 }
 
 export async function logout() {
