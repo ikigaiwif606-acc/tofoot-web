@@ -1,14 +1,18 @@
 import type { Metadata } from "next";
 import BlogCard from "@/components/BlogCard";
 import NewsletterForm from "@/components/NewsletterForm";
-import { blogPosts } from "@/lib/data";
+import { getBlogPosts } from "@/lib/db";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "文章 Blog | ToFoot 火光足球",
   description: "ToFoot 的足球文章——深度分析、球員故事、文化觀察。",
 };
 
-export default function BlogPage() {
+export default async function BlogPage() {
+  const blogPosts = await getBlogPosts();
+
   return (
     <main className="flex-1">
       <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6">

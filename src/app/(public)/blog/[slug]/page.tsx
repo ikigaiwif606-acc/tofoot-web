@@ -1,14 +1,26 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { blogPosts } from "@/lib/data";
+import { getBlogPosts, getBlogPost } from "@/lib/db";
+
+export const dynamic = "force-dynamic";
 import NewsletterForm from "@/components/NewsletterForm";
 
-export function generateStaticParams() {
-  return blogPosts.map((post) => ({ slug: post.slug }));
+export async function generateStaticParams() {
+  try {
+    const posts = await getBlogPosts();
+    return posts.map((post) => ({ slug: post.slug }));
+  } catch {
+    return [];
+  }
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }) {
-  const post = blogPosts.find((p) => p.slug === params.slug);
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const post = await getBlogPost(slug);
   if (!post) return { title: "Not Found" };
   return {
     title: `${post.title} | ToFoot 火光足球`,
@@ -24,7 +36,10 @@ function renderContent(content: string) {
   const flushList = () => {
     if (listItems.length > 0) {
       elements.push(
-        <ul key={`list-${elements.length}`} className="my-4 space-y-2 pl-6 list-disc text-muted">
+        <ul
+          key={`list-${elements.length}`}
+          className="my-4 space-y-2 pl-6 list-disc text-muted"
+        >
           {listItems.map((item, i) => (
             <li key={i} className="leading-relaxed">
               {item.includes("**") ? (
@@ -93,8 +108,13 @@ function renderContent(content: string) {
   return elements;
 }
 
-export default function BlogPostPage({ params }: { params: { slug: string } }) {
-  const post = blogPosts.find((p) => p.slug === params.slug);
+export default async function BlogPostPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const post = await getBlogPost(slug);
   if (!post) notFound();
 
   return (

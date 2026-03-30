@@ -3,9 +3,13 @@ import VideoCard from "@/components/VideoCard";
 import BlogCard from "@/components/BlogCard";
 import NewsletterForm from "@/components/NewsletterForm";
 import CountdownTimer from "@/components/fantasy/CountdownTimer";
-import { videos, blogPosts } from "@/lib/data";
+import { getVideos, getBlogPosts } from "@/lib/db";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const videos = await getVideos();
+  const blogPosts = await getBlogPosts();
   return (
     <main className="flex-1">
       {/* Hero */}
