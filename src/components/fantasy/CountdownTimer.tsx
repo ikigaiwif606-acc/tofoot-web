@@ -15,7 +15,7 @@ export default function CountdownTimer() {
   const diff = WORLD_CUP_START - now;
   if (diff <= 0) {
     return (
-      <div className="text-center text-2xl font-bold text-accent">
+      <div className="text-center text-2xl font-bold text-accent neon-text">
         世界盃已經開始！
       </div>
     );
@@ -35,17 +35,20 @@ export default function CountdownTimer() {
 
   return (
     <div className="flex justify-center gap-3 sm:gap-5">
-      {units.map((unit) => (
-        <div
-          key={unit.labelEn}
-          className="rounded-xl border border-card-border bg-background px-4 py-3 sm:px-8 sm:py-5"
-        >
-          <div className="text-2xl font-bold tabular-nums text-accent sm:text-4xl">
-            {String(unit.value).padStart(2, "0")}
+      {units.map((unit, i) => (
+        <div key={unit.labelEn} className="flex flex-col items-center">
+          <div className="scoreboard-digit px-4 py-3 sm:px-8 sm:py-5 rounded-xl animate-glow-border">
+            <div className="text-2xl font-bold font-mono tabular-nums sm:text-4xl">
+              {String(unit.value).padStart(2, "0")}
+            </div>
           </div>
-          <div className="mt-1 text-[10px] text-muted sm:text-xs">
+          <div className="mt-2 text-[10px] text-muted sm:text-xs">
             {unit.label}
           </div>
+          {/* Separator colon between digits */}
+          {i < units.length - 1 && (
+            <span className="absolute" />
+          )}
         </div>
       ))}
     </div>

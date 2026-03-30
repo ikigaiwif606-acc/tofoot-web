@@ -80,11 +80,11 @@ export default function MatchPredictionCard({
       : null;
 
   return (
-    <div className={`rounded-xl border bg-card-bg overflow-hidden transition-all ${
-      justSaved ? "animate-save-flash border-accent" : "border-card-border"
+    <div className={`rounded-xl overflow-hidden transition-all glass ${
+      justSaved ? "animate-save-flash !border-accent neon-glow" : ""
     }`}>
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-card-border bg-background/50 px-4 py-2">
+      <div className="flex items-center justify-between border-b border-glass-border bg-black/20 px-4 py-2">
         <div className="flex items-center gap-2 text-xs text-muted">
           <span className="rounded bg-accent/10 px-2 py-0.5 font-medium text-accent">
             {match.stage}
@@ -123,11 +123,11 @@ export default function MatchPredictionCard({
               <div className="text-center">
                 <div className="text-xs text-muted mb-1">實際</div>
                 <div className="flex items-center gap-1">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/20 text-lg font-bold text-accent">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-lg scoreboard-digit text-lg font-bold">
                     {match.homeScore}
                   </span>
                   <span className="text-muted">:</span>
-                  <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/20 text-lg font-bold text-accent">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-lg scoreboard-digit text-lg font-bold">
                     {match.awayScore}
                   </span>
                 </div>
@@ -247,8 +247,8 @@ export default function MatchPredictionCard({
               disabled={homeScore === "" || awayScore === ""}
               className={`rounded-lg px-6 py-2.5 text-sm font-semibold transition-all disabled:opacity-30 disabled:cursor-not-allowed ${
                 justSaved
-                  ? "bg-accent text-black"
-                  : "bg-accent text-black hover:bg-accent-dark"
+                  ? "btn-neon"
+                  : "btn-neon"
               }`}
             >
               {justSaved ? "已儲存 ✓" : existingPrediction ? "更新預測" : "送出預測"}

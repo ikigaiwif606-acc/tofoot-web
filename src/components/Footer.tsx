@@ -2,14 +2,14 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="mt-auto border-t border-card-border bg-card-bg">
+    <footer className="mt-auto border-t border-glass-border pitch-lines">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <div className="flex items-center gap-2">
               <span className="text-2xl">⚽</span>
               <span className="text-lg font-bold">
-                ToFoot <span className="text-accent">火光足球</span>
+                ToFoot <span className="text-accent neon-text">火光足球</span>
               </span>
             </div>
             <p className="mt-3 text-sm text-muted">
@@ -64,7 +64,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-10 border-t border-card-border pt-6 text-center text-xs text-muted">
+        <div className="mt-10 border-t border-glass-border pt-6 text-center text-xs text-muted">
           &copy; {new Date().getFullYear()} ToFoot 火光足球. All rights reserved.
         </div>
       </div>

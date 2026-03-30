@@ -5,9 +5,9 @@ export default function BlogCard({ post }: { post: BlogPost }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group flex gap-4 rounded-xl border border-card-border bg-card-bg p-5 transition-all hover:border-accent/50 hover:shadow-lg hover:shadow-accent/5"
+      className="group flex gap-4 rounded-xl glass glass-hover p-5 transition-all duration-300"
     >
-      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-3xl">
+      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-3xl transition-transform duration-300 group-hover:scale-110">
         {post.coverEmoji}
       </div>
       <div className="min-w-0 flex-1">
