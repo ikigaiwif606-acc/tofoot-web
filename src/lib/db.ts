@@ -207,6 +207,7 @@ export async function savePrediction(
 // ---- Leaderboard query ----
 
 export interface LeaderboardRow {
+  id: number;
   name: string;
   avatar: string;
   total_points: number;
@@ -219,7 +220,7 @@ export async function getLeaderboard(): Promise<LeaderboardRow[]> {
   const sql = getDb();
   const rows = await sql`
     SELECT
-      fu.name, fu.avatar,
+      fu.id, fu.name, fu.avatar,
       COALESCE(SUM(p.points_earned), 0)::int as total_points,
       COUNT(CASE WHEN p.points_earned = 10 THEN 1 END)::int as exact_scores,
       COUNT(CASE WHEN p.points_earned IN (3, 5) THEN 1 END)::int as correct_results,

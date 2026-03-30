@@ -197,3 +197,56 @@ export async function createMatch(formData: FormData) {
   revalidatePath("/admin/matches");
   revalidatePath("/fantasy");
 }
+
+export async function updateMatch(id: string, formData: FormData) {
+  await verifyAdmin();
+  const sql = getDb();
+  await sql`
+    UPDATE matches SET
+      home_team = ${formData.get("home_team") as string},
+      away_team = ${formData.get("away_team") as string},
+      home_flag = ${formData.get("home_flag") as string},
+      away_flag = ${formData.get("away_flag") as string},
+      kickoff = ${formData.get("kickoff") as string},
+      stage = ${formData.get("stage") as string},
+      group_name = ${(formData.get("group_name") as string) || null}
+    WHERE id = ${id}
+  `;
+  revalidatePath("/admin/matches");
+  revalidatePath("/fantasy");
+}
+
+export async function deleteMatch(id: string) {
+  await verifyAdmin();
+  const sql = getDb();
+  // Delete predictions for this match first
+  await sql`DELETE FROM predictions WHERE match_id = ${id}`;
+  await sql`DELETE FROM matches WHERE id = ${id}`;
+  revalidatePath("/admin/matches");
+  revalidatePath("/admin/leaderboard");
+  revalidatePath("/fantasy");
+}
+
+// ---- Fantasy Users ----
+
+export async function deleteFantasyUser(id: number) {
+  await verifyAdmin();
+  const sql = getDb();
+  await sql`DELETE FROM predictions WHERE user_id = ${id}`;
+  await sql`DELETE FROM fantasy_users WHERE id = ${id}`;
+  revalidatePath("/admin/leaderboard");
+  revalidatePath("/fantasy");
+}
+
+export async function updateFantasyUser(id: number, formData: FormData) {
+  await verifyAdmin();
+  const sql = getDb();
+  await sql`
+    UPDATE fantasy_users SET
+      name = ${formData.get("name") as string},
+      avatar = ${formData.get("avatar") as string}
+    WHERE id = ${id}
+  `;
+  revalidatePath("/admin/leaderboard");
+  revalidatePath("/fantasy");
+}

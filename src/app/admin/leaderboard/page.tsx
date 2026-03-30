@@ -1,5 +1,7 @@
 import { verifyAdmin } from "@/lib/auth";
 import { getLeaderboard } from "@/lib/db";
+import { deleteFantasyUser, updateFantasyUser } from "../actions";
+import LeaderboardRow from "./LeaderboardRow";
 
 export default async function AdminLeaderboardPage() {
   await verifyAdmin();
@@ -22,37 +24,23 @@ export default async function AdminLeaderboardPage() {
               <th className="px-4 py-3 text-right">Exact</th>
               <th className="px-4 py-3 text-right">Correct</th>
               <th className="px-4 py-3 text-right">Predictions</th>
+              <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
             {leaderboard.map((entry, i) => (
-              <tr
-                key={entry.name}
-                className="border-b border-card-border/50 last:border-0"
-              >
-                <td className="px-4 py-3 font-medium">
-                  {i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : i + 1}
-                </td>
-                <td className="px-4 py-3">
-                  <span className="mr-2">{entry.avatar}</span>
-                  {entry.name}
-                </td>
-                <td className="px-4 py-3 text-right font-bold text-accent">
-                  {entry.total_points}
-                </td>
-                <td className="px-4 py-3 text-right">{entry.exact_scores}</td>
-                <td className="px-4 py-3 text-right">
-                  {entry.correct_results}
-                </td>
-                <td className="px-4 py-3 text-right">
-                  {entry.total_predictions}
-                </td>
-              </tr>
+              <LeaderboardRow
+                key={entry.id}
+                entry={entry}
+                rank={i}
+                updateAction={updateFantasyUser}
+                deleteAction={deleteFantasyUser}
+              />
             ))}
             {leaderboard.length === 0 && (
               <tr>
                 <td
-                  colSpan={6}
+                  colSpan={7}
                   className="px-4 py-8 text-center text-muted"
                 >
                   No players yet

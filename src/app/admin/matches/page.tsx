@@ -1,6 +1,6 @@
 import { verifyAdmin } from "@/lib/auth";
 import { getMatches } from "@/lib/db";
-import { updateMatchScore, createMatch } from "../actions";
+import { updateMatchScore, createMatch, updateMatch, deleteMatch } from "../actions";
 import AdminMatchRow from "./AdminMatchRow";
 
 export default async function AdminMatchesPage() {
@@ -84,7 +84,13 @@ export default async function AdminMatchesPage() {
           </h2>
           <div className="mt-3 space-y-3">
             {live.map((m) => (
-              <AdminMatchRow key={m.id} match={m} action={updateMatchScore} />
+              <AdminMatchRow
+                key={m.id}
+                match={m}
+                updateAction={updateMatchScore}
+                deleteAction={deleteMatch}
+                editAction={updateMatch}
+              />
             ))}
           </div>
         </section>
@@ -95,7 +101,13 @@ export default async function AdminMatchesPage() {
         <h2 className="text-lg font-bold">Upcoming ({upcoming.length})</h2>
         <div className="mt-3 space-y-3">
           {upcoming.map((m) => (
-            <AdminMatchRow key={m.id} match={m} action={updateMatchScore} />
+            <AdminMatchRow
+              key={m.id}
+              match={m}
+              updateAction={updateMatchScore}
+              deleteAction={deleteMatch}
+              editAction={updateMatch}
+            />
           ))}
         </div>
       </section>
@@ -107,7 +119,13 @@ export default async function AdminMatchesPage() {
         </h2>
         <div className="mt-3 space-y-3">
           {finished.map((m) => (
-            <AdminMatchRow key={m.id} match={m} action={updateMatchScore} />
+            <AdminMatchRow
+              key={m.id}
+              match={m}
+              updateAction={updateMatchScore}
+              deleteAction={deleteMatch}
+              editAction={updateMatch}
+            />
           ))}
         </div>
       </section>
