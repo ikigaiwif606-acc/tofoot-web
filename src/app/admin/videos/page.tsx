@@ -1,6 +1,7 @@
 import { verifyAdmin } from "@/lib/auth";
 import { getVideoRows } from "@/lib/db";
 import { createVideo, updateVideo, deleteVideo } from "../actions";
+import { DeleteButton } from "../DeleteButton";
 import AdminVideoForm from "./AdminVideoForm";
 
 export default async function AdminVideosPage() {
@@ -61,20 +62,12 @@ export default async function AdminVideosPage() {
               </div>
             </details>
 
-            <form
-              action={deleteVideo.bind(null, video.id)}
-              className="mt-2"
-            >
-              <button
-                type="submit"
-                className="text-sm text-red-400 hover:text-red-300"
-                onClick={(e) => {
-                  if (!confirm("Delete this video?")) e.preventDefault();
-                }}
-              >
-                Delete
-              </button>
-            </form>
+            <div className="mt-2">
+              <DeleteButton
+                action={deleteVideo.bind(null, video.id)}
+                confirmMessage="Delete this video?"
+              />
+            </div>
           </div>
         ))}
       </div>

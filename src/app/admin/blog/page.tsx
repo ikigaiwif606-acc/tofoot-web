@@ -1,6 +1,7 @@
 import { verifyAdmin } from "@/lib/auth";
 import { getBlogRows } from "@/lib/db";
 import { createBlogPost, updateBlogPost, deleteBlogPost } from "../actions";
+import { DeleteButton } from "../DeleteButton";
 import AdminBlogForm from "./AdminBlogForm";
 
 export default async function AdminBlogPage() {
@@ -60,20 +61,12 @@ export default async function AdminBlogPage() {
               </div>
             </details>
 
-            <form
-              action={deleteBlogPost.bind(null, post.slug)}
-              className="mt-2"
-            >
-              <button
-                type="submit"
-                className="text-sm text-red-400 hover:text-red-300"
-                onClick={(e) => {
-                  if (!confirm("Delete this post?")) e.preventDefault();
-                }}
-              >
-                Delete
-              </button>
-            </form>
+            <div className="mt-2">
+              <DeleteButton
+                action={deleteBlogPost.bind(null, post.slug)}
+                confirmMessage="Delete this post?"
+              />
+            </div>
           </div>
         ))}
       </div>
