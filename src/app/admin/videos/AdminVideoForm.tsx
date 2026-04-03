@@ -1,6 +1,6 @@
 "use client";
 
-import type { VideoRow } from "@/lib/db";
+import type { Video } from "@/lib/db/queries";
 
 const inputClass =
   "w-full rounded-lg border border-card-border bg-background px-3 py-2 text-sm placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent";
@@ -10,7 +10,7 @@ export default function AdminVideoForm({
   defaultValues,
 }: {
   action: (formData: FormData) => Promise<void>;
-  defaultValues?: VideoRow;
+  defaultValues?: Video;
 }) {
   return (
     <form action={action} className="grid gap-4 sm:grid-cols-2">
@@ -27,7 +27,7 @@ export default function AdminVideoForm({
         <label className="mb-1 block text-xs text-muted">Title (EN)</label>
         <input
           name="title_en"
-          defaultValue={defaultValues?.title_en}
+          defaultValue={defaultValues?.titleEn}
           required
           className={inputClass}
         />
@@ -45,7 +45,7 @@ export default function AdminVideoForm({
         <label className="mb-1 block text-xs text-muted">YouTube ID</label>
         <input
           name="youtube_id"
-          defaultValue={defaultValues?.youtube_id}
+          defaultValue={defaultValues?.youtubeId}
           required
           placeholder="e.g. dQw4w9WgXcQ"
           className={inputClass}

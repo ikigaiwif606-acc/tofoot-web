@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import BlogCard from "@/components/BlogCard";
 import NewsletterForm from "@/components/NewsletterForm";
-import { getBlogPosts } from "@/lib/db";
+import { getBlogPosts } from "@/lib/db/queries";
 
 export const dynamic = "force-dynamic";
 

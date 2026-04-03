@@ -1,5 +1,5 @@
 import { verifyAdmin } from "@/lib/auth";
-import { getMatches } from "@/lib/db";
+import { getMatches } from "@/lib/db/queries";
 import { updateMatchScore, createMatch, updateMatch, deleteMatch } from "../actions";
 import AdminMatchRow from "./AdminMatchRow";
 

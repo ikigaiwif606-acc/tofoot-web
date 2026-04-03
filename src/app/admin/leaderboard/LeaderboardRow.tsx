@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { LeaderboardRow as LeaderboardEntry } from "@/lib/db";
+import type { LeaderboardEntry } from "@/lib/db/queries";
 
 export default function LeaderboardRow({
   entry,
@@ -71,11 +71,11 @@ export default function LeaderboardRow({
         {entry.name}
       </td>
       <td className="px-4 py-3 text-right font-bold text-accent">
-        {entry.total_points}
+        {entry.totalPoints}
       </td>
-      <td className="px-4 py-3 text-right">{entry.exact_scores}</td>
-      <td className="px-4 py-3 text-right">{entry.correct_results}</td>
-      <td className="px-4 py-3 text-right">{entry.total_predictions}</td>
+      <td className="px-4 py-3 text-right">{entry.exactScores}</td>
+      <td className="px-4 py-3 text-right">{entry.correctResults}</td>
+      <td className="px-4 py-3 text-right">{entry.totalPredictions}</td>
       <td className="px-4 py-3 text-right">
         <div className="flex items-center justify-end gap-2">
           <button

@@ -1,6 +1,6 @@
 "use client";
 
-import type { BlogRow } from "@/lib/db";
+import type { BlogPost } from "@/lib/db/queries";
 
 const inputClass =
   "w-full rounded-lg border border-card-border bg-background px-3 py-2 text-sm placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent";
@@ -10,7 +10,7 @@ export default function AdminBlogForm({
   defaultValues,
 }: {
   action: (formData: FormData) => Promise<void>;
-  defaultValues?: BlogRow;
+  defaultValues?: BlogPost;
 }) {
   return (
     <form action={action} className="grid gap-4">
@@ -87,7 +87,7 @@ export default function AdminBlogForm({
           <label className="mb-1 block text-xs text-muted">Read Time</label>
           <input
             name="read_time"
-            defaultValue={defaultValues?.read_time}
+            defaultValue={defaultValues?.readTime}
             placeholder="e.g. 8 min"
             className={inputClass}
           />
@@ -96,7 +96,7 @@ export default function AdminBlogForm({
           <label className="mb-1 block text-xs text-muted">Cover Emoji</label>
           <input
             name="cover_emoji"
-            defaultValue={defaultValues?.cover_emoji}
+            defaultValue={defaultValues?.coverEmoji}
             placeholder="e.g. 🇫🇷"
             className={inputClass}
           />

@@ -1,5 +1,5 @@
 import { verifyAdmin } from "@/lib/auth";
-import { getAdminStats } from "@/lib/db";
+import { getAdminStats } from "@/lib/db/queries";
 
 export default async function AdminDashboard() {
   await verifyAdmin();

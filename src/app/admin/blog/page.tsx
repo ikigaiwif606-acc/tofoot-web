@@ -1,12 +1,12 @@
 import { verifyAdmin } from "@/lib/auth";
-import { getBlogRows } from "@/lib/db";
+import { getBlogPosts } from "@/lib/db/queries";
 import { createBlogPost, updateBlogPost, deleteBlogPost } from "../actions";
 import { DeleteButton } from "../DeleteButton";
 import AdminBlogForm from "./AdminBlogForm";
 
 export default async function AdminBlogPage() {
   await verifyAdmin();
-  const posts = await getBlogRows();
+  const posts = await getBlogPosts();
 
   return (
     <div>
@@ -33,7 +33,7 @@ export default async function AdminBlogPage() {
             <div className="flex items-start justify-between">
               <div>
                 <h3 className="font-semibold">
-                  {post.cover_emoji} {post.title}
+                  {post.coverEmoji} {post.title}
                 </h3>
                 <p className="mt-1 text-sm text-muted line-clamp-2">
                   {post.excerpt}
@@ -43,7 +43,7 @@ export default async function AdminBlogPage() {
                     {post.category}
                   </span>
                   <span>{post.date}</span>
-                  <span>{post.read_time}</span>
+                  <span>{post.readTime}</span>
                   <span className="font-mono text-muted/60">{post.slug}</span>
                 </div>
               </div>

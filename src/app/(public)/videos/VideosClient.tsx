@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import VideoCard from "@/components/VideoCard";
-import type { Video } from "@/lib/data";
+import type { Video } from "@/lib/db/queries";
 
 interface Category {
   key: string;

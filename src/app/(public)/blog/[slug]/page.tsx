@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getBlogPosts, getBlogPost } from "@/lib/db";
+import { getBlogPosts, getBlogPost } from "@/lib/db/queries";
 
 export const dynamic = "force-dynamic";
 import NewsletterForm from "@/components/NewsletterForm";

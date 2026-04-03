@@ -1,5 +1,5 @@
 import { verifyAdmin } from "@/lib/auth";
-import { getLeaderboard } from "@/lib/db";
+import { getLeaderboard } from "@/lib/db/queries";
 import { deleteFantasyUser, updateFantasyUser } from "../actions";
 import LeaderboardRow from "./LeaderboardRow";
 

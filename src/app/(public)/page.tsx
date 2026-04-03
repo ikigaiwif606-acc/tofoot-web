@@ -3,7 +3,7 @@ import VideoCard from "@/components/VideoCard";
 import BlogCard from "@/components/BlogCard";
 import NewsletterForm from "@/components/NewsletterForm";
 import CountdownTimer from "@/components/fantasy/CountdownTimer";
-import { getVideos, getBlogPosts } from "@/lib/db";
+import { getVideos, getBlogPosts } from "@/lib/db/queries";
 
 export const dynamic = "force-dynamic";
 

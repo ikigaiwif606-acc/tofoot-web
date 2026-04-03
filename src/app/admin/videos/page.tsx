@@ -1,12 +1,12 @@
 import { verifyAdmin } from "@/lib/auth";
-import { getVideoRows } from "@/lib/db";
+import { getVideos } from "@/lib/db/queries";
 import { createVideo, updateVideo, deleteVideo } from "../actions";
 import { DeleteButton } from "../DeleteButton";
 import AdminVideoForm from "./AdminVideoForm";
 
 export default async function AdminVideosPage() {
   await verifyAdmin();
-  const videos = await getVideoRows();
+  const videos = await getVideos();
 
   return (
     <div>
@@ -34,13 +34,13 @@ export default async function AdminVideosPage() {
           >
             <div className="flex items-start gap-4">
               <img
-                src={`https://img.youtube.com/vi/${video.youtube_id}/mqdefault.jpg`}
+                src={`https://img.youtube.com/vi/${video.youtubeId}/mqdefault.jpg`}
                 alt=""
                 className="w-40 rounded-lg"
               />
               <div className="flex-1">
                 <h3 className="font-semibold">{video.title}</h3>
-                <p className="text-sm text-muted">{video.title_en}</p>
+                <p className="text-sm text-muted">{video.titleEn}</p>
                 <div className="mt-1 flex gap-3 text-xs text-muted">
                   <span>{video.category}</span>
                   <span>{video.date}</span>

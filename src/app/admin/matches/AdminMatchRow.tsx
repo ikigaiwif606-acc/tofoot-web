@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { MatchRow } from "@/lib/db";
+import type { Match } from "@/lib/db/queries";
 
 const inputClass =
   "rounded-lg border border-card-border bg-background px-3 py-2 text-sm focus:border-accent focus:outline-none";
@@ -12,7 +12,7 @@ export default function AdminMatchRow({
   deleteAction,
   editAction,
 }: {
-  match: MatchRow;
+  match: Match;
   updateAction: (id: string, formData: FormData) => Promise<void>;
   deleteAction: (id: string) => Promise<void>;
   editAction: (id: string, formData: FormData) => Promise<void>;
@@ -29,23 +29,23 @@ export default function AdminMatchRow({
         className="flex flex-wrap items-center gap-3"
       >
         <div className="flex items-center gap-2 text-sm font-medium min-w-[200px]">
-          <span>{match.home_flag}</span>
-          <span>{match.home_team}</span>
+          <span>{match.homeFlag}</span>
+          <span>{match.homeTeam}</span>
           <span className="text-muted">vs</span>
-          <span>{match.away_team}</span>
-          <span>{match.away_flag}</span>
+          <span>{match.awayTeam}</span>
+          <span>{match.awayFlag}</span>
         </div>
 
         <div className="text-xs text-muted">
           {match.stage}
-          {match.group_name ? ` · Group ${match.group_name}` : ""}
+          {match.groupName ? ` · Group ${match.groupName}` : ""}
         </div>
 
         <div className="flex items-center gap-1">
           <input
             type="number"
             name="home_score"
-            defaultValue={match.home_score ?? ""}
+            defaultValue={match.homeScore ?? ""}
             min={0}
             max={20}
             placeholder="-"
@@ -55,7 +55,7 @@ export default function AdminMatchRow({
           <input
             type="number"
             name="away_score"
-            defaultValue={match.away_score ?? ""}
+            defaultValue={match.awayScore ?? ""}
             min={0}
             max={20}
             placeholder="-"
@@ -112,19 +112,19 @@ export default function AdminMatchRow({
         >
           <div>
             <label className="mb-1 block text-xs text-muted">Home Team</label>
-            <input name="home_team" defaultValue={match.home_team} required className={inputClass + " w-full"} />
+            <input name="home_team" defaultValue={match.homeTeam} required className={inputClass + " w-full"} />
           </div>
           <div>
             <label className="mb-1 block text-xs text-muted">Away Team</label>
-            <input name="away_team" defaultValue={match.away_team} required className={inputClass + " w-full"} />
+            <input name="away_team" defaultValue={match.awayTeam} required className={inputClass + " w-full"} />
           </div>
           <div>
             <label className="mb-1 block text-xs text-muted">Home Flag</label>
-            <input name="home_flag" defaultValue={match.home_flag} required className={inputClass + " w-full"} />
+            <input name="home_flag" defaultValue={match.homeFlag} required className={inputClass + " w-full"} />
           </div>
           <div>
             <label className="mb-1 block text-xs text-muted">Away Flag</label>
-            <input name="away_flag" defaultValue={match.away_flag} required className={inputClass + " w-full"} />
+            <input name="away_flag" defaultValue={match.awayFlag} required className={inputClass + " w-full"} />
           </div>
           <div>
             <label className="mb-1 block text-xs text-muted">Kickoff</label>
@@ -142,7 +142,7 @@ export default function AdminMatchRow({
           </div>
           <div>
             <label className="mb-1 block text-xs text-muted">Group</label>
-            <input name="group_name" defaultValue={match.group_name ?? ""} placeholder="Optional" className={inputClass + " w-full"} />
+            <input name="group_name" defaultValue={match.groupName ?? ""} placeholder="Optional" className={inputClass + " w-full"} />
           </div>
           <div className="flex items-end">
             <button

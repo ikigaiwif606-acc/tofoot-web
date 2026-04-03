@@ -1,4 +1,4 @@
-import { getVideos } from "@/lib/db";
+import { getVideos } from "@/lib/db/queries";
 
 export const dynamic = "force-dynamic";
 import { categories } from "@/lib/data";
