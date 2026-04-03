@@ -71,3 +71,36 @@ export const predictions = pgTable(
   },
   (table) => [unique().on(table.userId, table.matchId)]
 );
+
+// ---- Daily Guess Game ----
+
+export const dailyPlayers = pgTable("daily_players", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  nationality: text("nationality").notNull(),
+  nationalityFlag: text("nationality_flag").notNull(),
+  position: text("position").notNull(),
+  age: integer("age").notNull(),
+  clubCount: integer("club_count").notNull(),
+  pastClub: text("past_club").notNull(),
+  league: text("league").notNull(),
+  currentClub: text("current_club").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const dailyChallenges = pgTable("daily_challenges", {
+  id: serial("id").primaryKey(),
+  date: text("date").notNull().unique(),
+  playerId: integer("player_id")
+    .notNull()
+    .references(() => dailyPlayers.id),
+});
+
+// ---- Suggestions / Idea Box ----
+
+export const suggestions = pgTable("suggestions", {
+  id: serial("id").primaryKey(),
+  name: text("name"),
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});

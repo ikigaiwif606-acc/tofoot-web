@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  /* Matchday Experience palette */
+  /* Cyberpunk palette */
   --background: #0a0e14;
   --foreground: #F5F5F5;
-  --accent: #FF6B35;
-  --accent-hover: #E55A2B;
-  --secondary: #3B82F6;
+  --accent: #8B5CF6;
+  --accent-hover: #7C3AED;
+  --secondary: #EC4899;
   --gold: #F59E0B;
   --success: #22C55E;
   --danger: #EF4444;
@@ -18,8 +18,8 @@
   --muted: #94A3B8;
 
   /* Glow shadows */
-  --glow-accent: 0 0 20px rgba(255, 107, 53, 0.25);
-  --glow-secondary: 0 0 20px rgba(59, 130, 246, 0.25);
+  --glow-accent: 0 0 20px rgba(139, 92, 246, 0.25);
+  --glow-secondary: 0 0 20px rgba(236, 72, 153, 0.25);
   --glow-gold: 0 0 20px rgba(245, 158, 11, 0.25);
 }
 
@@ -43,8 +43,8 @@
 
 body {
   background:
-    radial-gradient(ellipse at 20% 50%, rgba(255, 107, 53, 0.04) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(59, 130, 246, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 20% 50%, rgba(139, 92, 246, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(236, 72, 153, 0.03) 0%, transparent 50%),
     var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), "Noto Sans TC", sans-serif;
@@ -83,7 +83,7 @@ h1, h2, h3 {
 }
 
 .card-interactive:hover {
-  border-color: rgba(255, 107, 53, 0.3);
+  border-color: rgba(139, 92, 246, 0.3);
   background: var(--surface-hover);
 }
 
@@ -99,8 +99,8 @@ h1, h2, h3 {
 /* ---- Scoreboard digits ---- */
 
 .scoreboard-digit {
-  background: rgba(255, 107, 53, 0.08);
-  border: 1px solid rgba(255, 107, 53, 0.2);
+  background: rgba(139, 92, 246, 0.08);
+  border: 1px solid rgba(139, 92, 246, 0.2);
   border-radius: 0.5rem;
   font-family: var(--font-mono), monospace;
   font-variant-numeric: tabular-nums;
@@ -125,7 +125,7 @@ h1, h2, h3 {
 
 @keyframes save-flash {
   0% { transform: scale(1); }
-  50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 107, 53, 0.5); }
+  50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(139, 92, 246, 0.5); }
   100% { transform: scale(1); }
 }
 
@@ -140,13 +140,13 @@ h1, h2, h3 {
 }
 
 @keyframes accent-pulse {
-  0%, 100% { box-shadow: 0 0 10px rgba(255, 107, 53, 0.2); }
-  50% { box-shadow: 0 0 25px rgba(255, 107, 53, 0.4); }
+  0%, 100% { box-shadow: 0 0 10px rgba(139, 92, 246, 0.2); }
+  50% { box-shadow: 0 0 25px rgba(139, 92, 246, 0.4); }
 }
 
 @keyframes glow-border {
-  0%, 100% { border-color: rgba(255, 107, 53, 0.15); }
-  50% { border-color: rgba(255, 107, 53, 0.35); }
+  0%, 100% { border-color: rgba(139, 92, 246, 0.15); }
+  50% { border-color: rgba(139, 92, 246, 0.35); }
 }
 
 .animate-fade-in {

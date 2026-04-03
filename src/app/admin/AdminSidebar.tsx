@@ -10,6 +10,7 @@ const navItems = [
   { href: "/admin/blog", label: "Blog", icon: "📝", exact: false },
   { href: "/admin/matches", label: "Matches", icon: "⚽", exact: false },
   { href: "/admin/leaderboard", label: "Leaderboard", icon: "🏆", exact: false },
+  { href: "/admin/suggestions", label: "Idea Box", icon: "💡", exact: false },
 ];
 
 export function AdminSidebar() {

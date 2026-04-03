@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import NewsletterForm from "@/components/NewsletterForm";
+import IdeaBox from "./IdeaBox";
 
 export const metadata: Metadata = {
   title: "關於 About | ToFoot 火光足球",
@@ -123,6 +124,10 @@ export default function AboutPage() {
         </div>
 
         <div className="mt-12">
+          <IdeaBox />
+        </div>
+
+        <div className="mt-8">
           <NewsletterForm />
         </div>
       </section>

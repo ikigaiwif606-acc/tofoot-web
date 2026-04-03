@@ -7,6 +7,9 @@ import {
   matches,
   fantasyUsers,
   predictions,
+  dailyPlayers,
+  dailyChallenges,
+  suggestions,
 } from "./schema";
 import type { InferSelectModel } from "drizzle-orm";
 
@@ -357,4 +360,101 @@ export async function getAdminStats(): Promise<AdminStats> {
     userCount: userRows[0].count,
     predictionCount: predictionRows[0].count,
   };
+}
+
+// ---- Daily Guess Game ----
+
+export type DailyPlayer = InferSelectModel<typeof dailyPlayers>;
+export type DailyChallenge = InferSelectModel<typeof dailyChallenges>;
+
+export async function getAllPlayerNames(): Promise<
+  { id: number; name: string }[]
+> {
+  const db = getDb();
+  return db
+    .select({ id: dailyPlayers.id, name: dailyPlayers.name })
+    .from(dailyPlayers)
+    .orderBy(asc(dailyPlayers.name));
+}
+
+export async function getDailyPlayerById(
+  id: number
+): Promise<DailyPlayer | undefined> {
+  const db = getDb();
+  const rows = await db
+    .select()
+    .from(dailyPlayers)
+    .where(eq(dailyPlayers.id, id))
+    .limit(1);
+  return rows[0];
+}
+
+export async function getTodayChallenge(): Promise<{
+  challenge: DailyChallenge;
+  player: DailyPlayer;
+}> {
+  const db = getDb();
+  const today = new Date().toISOString().slice(0, 10);
+
+  // Check if today already has a challenge
+  const existing = await db
+    .select()
+    .from(dailyChallenges)
+    .where(eq(dailyChallenges.date, today))
+    .limit(1);
+
+  if (existing[0]) {
+    const player = await getDailyPlayerById(existing[0].playerId);
+    return { challenge: existing[0], player: player! };
+  }
+
+  // Pick a random unused player
+  const usedIds = await db
+    .select({ playerId: dailyChallenges.playerId })
+    .from(dailyChallenges);
+  const usedSet = new Set(usedIds.map((r) => r.playerId));
+
+  const allPlayers = await db.select().from(dailyPlayers);
+  const available = allPlayers.filter((p) => !usedSet.has(p.id));
+
+  // If all used, reset by picking from all
+  const pool = available.length > 0 ? available : allPlayers;
+  const randomPlayer = pool[Math.floor(Math.random() * pool.length)];
+
+  const [challenge] = await db
+    .insert(dailyChallenges)
+    .values({ date: today, playerId: randomPlayer.id })
+    .returning();
+
+  return { challenge, player: randomPlayer };
+}
+
+export async function getChallengeNumber(date: string): Promise<number> {
+  const db = getDb();
+  const rows = await db
+    .select({ count: count() })
+    .from(dailyChallenges)
+    .where(sql`${dailyChallenges.date} <= ${date}`);
+  return rows[0].count;
+}
+
+// ---- Suggestions ----
+
+export type Suggestion = InferSelectModel<typeof suggestions>;
+
+export async function createSuggestion(
+  content: string,
+  name?: string
+): Promise<Suggestion> {
+  const db = getDb();
+  const rows = await db
+    .insert(suggestions)
+    .values({ content, name: name || null })
+    .returning();
+  return rows[0];
+}
+
+export async function getSuggestions(): Promise<Suggestion[]> {
+  const db = getDb();
+  return db.select().from(suggestions).orderBy(desc(suggestions.createdAt));
 }

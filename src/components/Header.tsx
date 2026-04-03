@@ -6,6 +6,7 @@ import { useState } from "react";
 
 const navLinks = [
   { href: "/", label: "首頁" },
+  { href: "/daily", label: "每日" },
   { href: "/videos", label: "影片" },
   { href: "/blog", label: "文章" },
   { href: "/world-cup", label: "世界盃" },
