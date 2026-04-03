@@ -6,7 +6,7 @@ import { createAdminSession, deleteAdminSession } from "@/lib/session";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { calculateScore } from "@/lib/scoring";
-import { getDb } from "@/lib/db";
+import { getDb } from "@/lib/db/index";
 import {
   videos,
   blogPosts,
