@@ -2,6 +2,7 @@ import { verifyAdmin } from "@/lib/auth";
 import { getMatches } from "@/lib/db/queries";
 import { updateMatchScore, createMatch, updateMatch, deleteMatch } from "../actions";
 import AdminMatchRow from "./AdminMatchRow";
+import AdminCreateMatchForm from "./AdminCreateMatchForm";
 
 export default async function AdminMatchesPage() {
   await verifyAdmin();
@@ -24,55 +25,7 @@ export default async function AdminMatchesPage() {
           + Add New Match
         </summary>
         <div className="border-t border-card-border p-6">
-          <form action={createMatch} className="grid gap-4 sm:grid-cols-2">
-            <input
-              name="home_team"
-              placeholder="Home team"
-              required
-              className="rounded-lg border border-card-border bg-background px-3 py-2 text-sm focus:border-accent focus:outline-none"
-            />
-            <input
-              name="away_team"
-              placeholder="Away team"
-              required
-              className="rounded-lg border border-card-border bg-background px-3 py-2 text-sm focus:border-accent focus:outline-none"
-            />
-            <input
-              name="home_flag"
-              placeholder="Home flag emoji"
-              required
-              className="rounded-lg border border-card-border bg-background px-3 py-2 text-sm focus:border-accent focus:outline-none"
-            />
-            <input
-              name="away_flag"
-              placeholder="Away flag emoji"
-              required
-              className="rounded-lg border border-card-border bg-background px-3 py-2 text-sm focus:border-accent focus:outline-none"
-            />
-            <input
-              type="datetime-local"
-              name="kickoff"
-              required
-              className="rounded-lg border border-card-border bg-background px-3 py-2 text-sm focus:border-accent focus:outline-none"
-            />
-            <input
-              name="stage"
-              placeholder="Stage (e.g. 小組賽)"
-              required
-              className="rounded-lg border border-card-border bg-background px-3 py-2 text-sm focus:border-accent focus:outline-none"
-            />
-            <input
-              name="group_name"
-              placeholder="Group (optional, e.g. A)"
-              className="rounded-lg border border-card-border bg-background px-3 py-2 text-sm focus:border-accent focus:outline-none"
-            />
-            <button
-              type="submit"
-              className="rounded-lg bg-accent px-6 py-2 text-sm font-semibold text-black hover:bg-accent-dark"
-            >
-              Add Match
-            </button>
-          </form>
+          <AdminCreateMatchForm action={createMatch} />
         </div>
       </details>
 

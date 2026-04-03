@@ -1,11 +1,14 @@
 "use client";
 
+import { toast } from "sonner";
+import type { ActionResult } from "@/lib/validations";
+
 export function DeleteButton({
   action,
   label = "Delete",
   confirmMessage = "Are you sure?",
 }: {
-  action: () => Promise<void>;
+  action: () => Promise<ActionResult>;
   label?: string;
   confirmMessage?: string;
 }) {
@@ -13,7 +16,9 @@ export function DeleteButton({
     <form
       action={async () => {
         if (confirm(confirmMessage)) {
-          await action();
+          const result = await action();
+          if (result.success) toast.success("Deleted");
+          else if (result.error) toast.error(result.error);
         }
       }}
     >

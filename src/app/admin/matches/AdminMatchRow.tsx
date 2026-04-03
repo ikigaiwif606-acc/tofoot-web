@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useActionState, useEffect } from "react";
+import { toast } from "sonner";
 import type { Match } from "@/lib/db/queries";
+import type { ActionResult } from "@/lib/validations";
 
 const inputClass =
   "rounded-lg border border-card-border bg-background px-3 py-2 text-sm focus:border-accent focus:outline-none";
@@ -13,19 +15,35 @@ export default function AdminMatchRow({
   editAction,
 }: {
   match: Match;
-  updateAction: (id: string, formData: FormData) => Promise<void>;
-  deleteAction: (id: string) => Promise<void>;
-  editAction: (id: string, formData: FormData) => Promise<void>;
+  updateAction: (id: string, prev: ActionResult, formData: FormData) => Promise<ActionResult>;
+  deleteAction: (id: string) => Promise<ActionResult>;
+  editAction: (id: string, prev: ActionResult, formData: FormData) => Promise<ActionResult>;
 }) {
   const [editing, setEditing] = useState(false);
   const boundUpdate = updateAction.bind(null, match.id);
   const boundEdit = editAction.bind(null, match.id);
 
+  const [scoreState, scoreFormAction, scorePending] = useActionState(boundUpdate, { success: false });
+  const [editState, editFormAction, editPending] = useActionState(boundEdit, { success: false });
+
+  useEffect(() => {
+    if (scoreState.success) toast.success("Score updated");
+    if (scoreState.error) toast.error(scoreState.error);
+  }, [scoreState]);
+
+  useEffect(() => {
+    if (editState.success) {
+      toast.success("Match updated");
+      setEditing(false);
+    }
+    if (editState.error) toast.error(editState.error);
+  }, [editState]);
+
   return (
     <div className="rounded-xl border border-card-border bg-card-bg p-4">
       {/* Score & Status row */}
       <form
-        action={boundUpdate}
+        action={scoreFormAction}
         className="flex flex-wrap items-center gap-3"
       >
         <div className="flex items-center gap-2 text-sm font-medium min-w-[200px]">
@@ -75,9 +93,10 @@ export default function AdminMatchRow({
 
         <button
           type="submit"
-          className="rounded-lg bg-accent px-4 py-1.5 text-xs font-semibold text-black hover:bg-accent-dark"
+          disabled={scorePending}
+          className="rounded-lg bg-accent px-4 py-1.5 text-xs font-semibold text-black hover:bg-accent-dark disabled:opacity-50"
         >
-          Save
+          {scorePending ? "Saving..." : "Save"}
         </button>
 
         <button
@@ -90,9 +109,11 @@ export default function AdminMatchRow({
 
         <button
           type="button"
-          onClick={() => {
+          onClick={async () => {
             if (confirm("Delete this match and all its predictions?")) {
-              deleteAction(match.id);
+              const result = await deleteAction(match.id);
+              if (result.success) toast.success("Match deleted");
+              else if (result.error) toast.error(result.error);
             }
           }}
           className="text-xs text-red-400 hover:text-red-300"
@@ -104,10 +125,7 @@ export default function AdminMatchRow({
       {/* Edit details */}
       {editing && (
         <form
-          action={async (formData) => {
-            await boundEdit(formData);
-            setEditing(false);
-          }}
+          action={editFormAction}
           className="mt-4 border-t border-card-border pt-4 grid gap-3 sm:grid-cols-2"
         >
           <div>
@@ -147,9 +165,10 @@ export default function AdminMatchRow({
           <div className="flex items-end">
             <button
               type="submit"
-              className="rounded-lg bg-accent px-6 py-2 text-sm font-semibold text-black hover:bg-accent-dark"
+              disabled={editPending}
+              className="rounded-lg bg-accent px-6 py-2 text-sm font-semibold text-black hover:bg-accent-dark disabled:opacity-50"
             >
-              Update Match
+              {editPending ? "Saving..." : "Update Match"}
             </button>
           </div>
         </form>

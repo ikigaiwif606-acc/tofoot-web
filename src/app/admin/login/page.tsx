@@ -6,7 +6,9 @@ import { login } from "../actions";
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [state, formAction, pending] = useActionState(login, { error: "" });
+  const [state, formAction, pending] = useActionState(login, {
+    success: false,
+  });
 
   useEffect(() => {
     if (state.success) {
@@ -26,15 +28,15 @@ export default function AdminLoginPage() {
             name="password"
             placeholder="Password"
             required
-            className="w-full rounded-lg border border-card-border bg-background px-4 py-2.5 text-sm placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+            className="w-full rounded-lg border border-card-border bg-background px-4 py-2.5 text-sm placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/50"
           />
           {state.error && (
-            <p className="mt-2 text-sm text-red-400">{state.error}</p>
+            <p className="mt-2 text-sm text-danger">{state.error}</p>
           )}
           <button
             type="submit"
             disabled={pending}
-            className="mt-4 w-full rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-accent-dark disabled:opacity-50"
+            className="mt-4 w-full rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-hover disabled:opacity-50"
           >
             {pending ? "Logging in..." : "Login"}
           </button>

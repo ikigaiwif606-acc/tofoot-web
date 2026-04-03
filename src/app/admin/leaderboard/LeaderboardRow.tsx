@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useActionState, useEffect } from "react";
+import { toast } from "sonner";
 import type { LeaderboardEntry } from "@/lib/db/queries";
+import type { ActionResult } from "@/lib/validations";
 
 export default function LeaderboardRow({
   entry,
@@ -11,10 +13,20 @@ export default function LeaderboardRow({
 }: {
   entry: LeaderboardEntry;
   rank: number;
-  updateAction: (id: number, formData: FormData) => Promise<void>;
-  deleteAction: (id: number) => Promise<void>;
+  updateAction: (id: number, prev: ActionResult, formData: FormData) => Promise<ActionResult>;
+  deleteAction: (id: number) => Promise<ActionResult>;
 }) {
   const [editing, setEditing] = useState(false);
+  const boundUpdate = updateAction.bind(null, entry.id);
+  const [state, formAction, pending] = useActionState(boundUpdate, { success: false });
+
+  useEffect(() => {
+    if (state.success) {
+      toast.success("User updated");
+      setEditing(false);
+    }
+    if (state.error) toast.error(state.error);
+  }, [state]);
 
   const rankDisplay =
     rank === 0 ? "🥇" : rank === 1 ? "🥈" : rank === 2 ? "🥉" : rank + 1;
@@ -25,10 +37,7 @@ export default function LeaderboardRow({
         <td className="px-4 py-3 font-medium">{rankDisplay}</td>
         <td colSpan={5} className="px-4 py-3">
           <form
-            action={async (formData) => {
-              await updateAction(entry.id, formData);
-              setEditing(false);
-            }}
+            action={formAction}
             className="flex items-center gap-3"
           >
             <input
@@ -45,9 +54,10 @@ export default function LeaderboardRow({
             />
             <button
               type="submit"
-              className="rounded bg-accent px-3 py-1 text-xs font-semibold text-black hover:bg-accent-dark"
+              disabled={pending}
+              className="rounded bg-accent px-3 py-1 text-xs font-semibold text-black hover:bg-accent-dark disabled:opacity-50"
             >
-              Save
+              {pending ? "Saving..." : "Save"}
             </button>
             <button
               type="button"
@@ -85,13 +95,15 @@ export default function LeaderboardRow({
             Edit
           </button>
           <button
-            onClick={() => {
+            onClick={async () => {
               if (
                 confirm(
                   `Delete "${entry.name}" and all their predictions?`
                 )
               ) {
-                deleteAction(entry.id);
+                const result = await deleteAction(entry.id);
+                if (result.success) toast.success("User deleted");
+                else if (result.error) toast.error(result.error);
               }
             }}
             className="text-xs text-red-400 hover:text-red-300"

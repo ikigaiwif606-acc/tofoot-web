@@ -1,6 +1,9 @@
 "use client";
 
+import { useActionState, useEffect } from "react";
+import { toast } from "sonner";
 import type { BlogPost } from "@/lib/db/queries";
+import type { ActionResult } from "@/lib/validations";
 
 const inputClass =
   "w-full rounded-lg border border-card-border bg-background px-3 py-2 text-sm placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent";
@@ -9,11 +12,20 @@ export default function AdminBlogForm({
   action,
   defaultValues,
 }: {
-  action: (formData: FormData) => Promise<void>;
+  action: (prev: ActionResult, formData: FormData) => Promise<ActionResult>;
   defaultValues?: BlogPost;
 }) {
+  const [state, formAction, pending] = useActionState(action, {
+    success: false,
+  });
+
+  useEffect(() => {
+    if (state.success) toast.success(defaultValues ? "Post updated" : "Post created");
+    if (state.error) toast.error(state.error);
+  }, [state, defaultValues]);
+
   return (
-    <form action={action} className="grid gap-4">
+    <form action={formAction} className="grid gap-4">
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className="mb-1 block text-xs text-muted">Title</label>
@@ -106,10 +118,18 @@ export default function AdminBlogForm({
       <div>
         <button
           type="submit"
-          className="rounded-lg bg-accent px-6 py-2 text-sm font-semibold text-black transition-colors hover:bg-accent-dark"
+          disabled={pending}
+          className="rounded-lg bg-accent px-6 py-2 text-sm font-semibold text-black transition-colors hover:bg-accent-dark disabled:opacity-50"
         >
-          {defaultValues ? "Update Post" : "Create Post"}
+          {pending
+            ? "Saving..."
+            : defaultValues
+              ? "Update Post"
+              : "Create Post"}
         </button>
+        {state.error && (
+          <p className="mt-2 text-sm text-danger">{state.error}</p>
+        )}
       </div>
     </form>
   );

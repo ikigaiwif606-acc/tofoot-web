@@ -1,19 +1,31 @@
 "use client";
 
+import { useActionState, useEffect } from "react";
+import { toast } from "sonner";
 import type { Video } from "@/lib/db/queries";
+import type { ActionResult } from "@/lib/validations";
 
 const inputClass =
-  "w-full rounded-lg border border-card-border bg-background px-3 py-2 text-sm placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent";
+  "w-full rounded-lg border border-card-border bg-background px-3 py-2 text-sm placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/50";
 
 export default function AdminVideoForm({
   action,
   defaultValues,
 }: {
-  action: (formData: FormData) => Promise<void>;
+  action: (prev: ActionResult, formData: FormData) => Promise<ActionResult>;
   defaultValues?: Video;
 }) {
+  const [state, formAction, pending] = useActionState(action, {
+    success: false,
+  });
+
+  useEffect(() => {
+    if (state.success) toast.success(defaultValues ? "Video updated" : "Video created");
+    if (state.error) toast.error(state.error);
+  }, [state, defaultValues]);
+
   return (
-    <form action={action} className="grid gap-4 sm:grid-cols-2">
+    <form action={formAction} className="grid gap-4 sm:grid-cols-2">
       <div>
         <label className="mb-1 block text-xs text-muted">Title (中文)</label>
         <input
@@ -96,10 +108,18 @@ export default function AdminVideoForm({
       <div className="sm:col-span-2">
         <button
           type="submit"
-          className="rounded-lg bg-accent px-6 py-2 text-sm font-semibold text-black transition-colors hover:bg-accent-dark"
+          disabled={pending}
+          className="rounded-lg bg-accent px-6 py-2 text-sm font-semibold text-white transition-colors hover:bg-accent-hover disabled:opacity-50"
         >
-          {defaultValues ? "Update Video" : "Add Video"}
+          {pending
+            ? "Saving..."
+            : defaultValues
+              ? "Update Video"
+              : "Add Video"}
         </button>
+        {state.error && (
+          <p className="mt-2 text-sm text-danger">{state.error}</p>
+        )}
       </div>
     </form>
   );

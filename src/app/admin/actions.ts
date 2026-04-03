@@ -1,24 +1,62 @@
 "use server";
 
+import { compare } from "bcryptjs";
 import { verifyAdmin } from "@/lib/auth";
-import { getDb } from "@/lib/db";
 import { createAdminSession, deleteAdminSession } from "@/lib/session";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { calculateScore } from "@/lib/scoring";
+import { getDb } from "@/lib/db";
+import {
+  videos,
+  blogPosts,
+  matches,
+  predictions,
+  fantasyUsers,
+} from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
+import type { ActionResult } from "@/lib/validations";
+import {
+  parseFormData,
+  loginSchema,
+  videoSchema,
+  blogPostSchema,
+  createMatchSchema,
+  updateMatchScoreSchema,
+  updateFantasyUserSchema,
+} from "@/lib/validations";
+import {
+  getPredictionsForMatch,
+  updatePredictionPoints,
+} from "@/lib/db/queries";
 
 // ---- Auth ----
 
 export async function login(
-  _prev: { error: string; success?: boolean },
+  _prev: ActionResult,
   formData: FormData
-): Promise<{ error: string; success?: boolean }> {
-  const password = formData.get("password") as string;
-  if (password !== process.env.ADMIN_PASSWORD) {
-    return { error: "Incorrect password" };
+): Promise<ActionResult> {
+  try {
+    const parsed = parseFormData(loginSchema, formData);
+    if (!parsed.success) return { success: false, error: parsed.error };
+
+    const hash = process.env.ADMIN_PASSWORD_HASH;
+    if (!hash) {
+      // Fallback to plaintext comparison if hash not set yet
+      const plain = process.env.ADMIN_PASSWORD;
+      if (!plain || parsed.data.password !== plain) {
+        return { success: false, error: "Incorrect password" };
+      }
+    } else {
+      const isValid = await compare(parsed.data.password, hash);
+      if (!isValid) return { success: false, error: "Incorrect password" };
+    }
+
+    await createAdminSession();
+    return { success: true };
+  } catch {
+    return { success: false, error: "Login failed" };
   }
-  await createAdminSession();
-  return { error: "", success: true };
 }
 
 export async function logout() {
@@ -28,225 +66,347 @@ export async function logout() {
 
 // ---- Videos ----
 
-export async function createVideo(formData: FormData) {
-  await verifyAdmin();
-  const sql = getDb();
-  const id = crypto.randomUUID().slice(0, 8);
-  await sql`
-    INSERT INTO videos (id, title, title_en, description, youtube_id, date, duration, views, category)
-    VALUES (
-      ${id},
-      ${formData.get("title") as string},
-      ${formData.get("title_en") as string},
-      ${formData.get("description") as string},
-      ${formData.get("youtube_id") as string},
-      ${formData.get("date") as string},
-      ${formData.get("duration") as string},
-      ${formData.get("views") as string || "0"},
-      ${formData.get("category") as string}
-    )
-  `;
-  revalidatePath("/admin/videos");
-  revalidatePath("/");
-  revalidatePath("/videos");
+export async function createVideo(
+  _prev: ActionResult,
+  formData: FormData
+): Promise<ActionResult> {
+  try {
+    await verifyAdmin();
+    const parsed = parseFormData(videoSchema, formData);
+    if (!parsed.success) return { success: false, error: parsed.error };
+
+    const db = getDb();
+    const id = crypto.randomUUID().slice(0, 8);
+    await db.insert(videos).values({
+      id,
+      title: parsed.data.title,
+      titleEn: parsed.data.title_en,
+      description: parsed.data.description,
+      youtubeId: parsed.data.youtube_id,
+      date: parsed.data.date,
+      duration: parsed.data.duration,
+      views: parsed.data.views,
+      category: parsed.data.category,
+    });
+
+    revalidatePath("/admin/videos");
+    revalidatePath("/");
+    revalidatePath("/videos");
+    return { success: true };
+  } catch (e) {
+    console.error("createVideo failed:", e);
+    return { success: false, error: "Failed to create video" };
+  }
 }
 
-export async function updateVideo(id: string, formData: FormData) {
-  await verifyAdmin();
-  const sql = getDb();
-  await sql`
-    UPDATE videos SET
-      title = ${formData.get("title") as string},
-      title_en = ${formData.get("title_en") as string},
-      description = ${formData.get("description") as string},
-      youtube_id = ${formData.get("youtube_id") as string},
-      date = ${formData.get("date") as string},
-      duration = ${formData.get("duration") as string},
-      views = ${formData.get("views") as string},
-      category = ${formData.get("category") as string}
-    WHERE id = ${id}
-  `;
-  revalidatePath("/admin/videos");
-  revalidatePath("/");
-  revalidatePath("/videos");
+export async function updateVideo(
+  id: string,
+  _prev: ActionResult,
+  formData: FormData
+): Promise<ActionResult> {
+  try {
+    await verifyAdmin();
+    const parsed = parseFormData(videoSchema, formData);
+    if (!parsed.success) return { success: false, error: parsed.error };
+
+    const db = getDb();
+    await db
+      .update(videos)
+      .set({
+        title: parsed.data.title,
+        titleEn: parsed.data.title_en,
+        description: parsed.data.description,
+        youtubeId: parsed.data.youtube_id,
+        date: parsed.data.date,
+        duration: parsed.data.duration,
+        views: parsed.data.views,
+        category: parsed.data.category,
+      })
+      .where(eq(videos.id, id));
+
+    revalidatePath("/admin/videos");
+    revalidatePath("/");
+    revalidatePath("/videos");
+    return { success: true };
+  } catch (e) {
+    console.error("updateVideo failed:", e);
+    return { success: false, error: "Failed to update video" };
+  }
 }
 
-export async function deleteVideo(id: string) {
-  await verifyAdmin();
-  const sql = getDb();
-  await sql`DELETE FROM videos WHERE id = ${id}`;
-  revalidatePath("/admin/videos");
-  revalidatePath("/");
-  revalidatePath("/videos");
+export async function deleteVideo(id: string): Promise<ActionResult> {
+  try {
+    await verifyAdmin();
+    const db = getDb();
+    await db.delete(videos).where(eq(videos.id, id));
+    revalidatePath("/admin/videos");
+    revalidatePath("/");
+    revalidatePath("/videos");
+    return { success: true };
+  } catch (e) {
+    console.error("deleteVideo failed:", e);
+    return { success: false, error: "Failed to delete video" };
+  }
 }
 
 // ---- Blog ----
 
-export async function createBlogPost(formData: FormData) {
-  await verifyAdmin();
-  const sql = getDb();
-  const title = formData.get("title") as string;
-  const slug =
-    (formData.get("slug") as string) ||
-    title
-      .toLowerCase()
-      .replace(/[^a-z0-9\u4e00-\u9fff]+/g, "-")
-      .replace(/^-|-$/g, "");
-  await sql`
-    INSERT INTO blog_posts (slug, title, excerpt, content, date, category, read_time, cover_emoji)
-    VALUES (
-      ${slug},
-      ${title},
-      ${formData.get("excerpt") as string},
-      ${formData.get("content") as string},
-      ${formData.get("date") as string},
-      ${formData.get("category") as string},
-      ${formData.get("read_time") as string || "5 min"},
-      ${formData.get("cover_emoji") as string || "📝"}
-    )
-  `;
-  revalidatePath("/admin/blog");
-  revalidatePath("/");
-  revalidatePath("/blog");
+export async function createBlogPost(
+  _prev: ActionResult,
+  formData: FormData
+): Promise<ActionResult> {
+  try {
+    await verifyAdmin();
+    const parsed = parseFormData(blogPostSchema, formData);
+    if (!parsed.success) return { success: false, error: parsed.error };
+
+    const slug =
+      parsed.data.slug ||
+      parsed.data.title
+        .toLowerCase()
+        .replace(/[^a-z0-9\u4e00-\u9fff]+/g, "-")
+        .replace(/^-|-$/g, "");
+
+    const db = getDb();
+    await db.insert(blogPosts).values({
+      slug,
+      title: parsed.data.title,
+      excerpt: parsed.data.excerpt,
+      content: parsed.data.content,
+      date: parsed.data.date,
+      category: parsed.data.category,
+      readTime: parsed.data.read_time,
+      coverEmoji: parsed.data.cover_emoji,
+    });
+
+    revalidatePath("/admin/blog");
+    revalidatePath("/");
+    revalidatePath("/blog");
+    return { success: true };
+  } catch (e) {
+    console.error("createBlogPost failed:", e);
+    return { success: false, error: "Failed to create blog post" };
+  }
 }
 
-export async function updateBlogPost(slug: string, formData: FormData) {
-  await verifyAdmin();
-  const sql = getDb();
-  await sql`
-    UPDATE blog_posts SET
-      title = ${formData.get("title") as string},
-      excerpt = ${formData.get("excerpt") as string},
-      content = ${formData.get("content") as string},
-      date = ${formData.get("date") as string},
-      category = ${formData.get("category") as string},
-      read_time = ${formData.get("read_time") as string},
-      cover_emoji = ${formData.get("cover_emoji") as string}
-    WHERE slug = ${slug}
-  `;
-  revalidatePath("/admin/blog");
-  revalidatePath("/");
-  revalidatePath("/blog");
-  revalidatePath(`/blog/${slug}`);
+export async function updateBlogPost(
+  slug: string,
+  _prev: ActionResult,
+  formData: FormData
+): Promise<ActionResult> {
+  try {
+    await verifyAdmin();
+    const parsed = parseFormData(blogPostSchema, formData);
+    if (!parsed.success) return { success: false, error: parsed.error };
+
+    const db = getDb();
+    await db
+      .update(blogPosts)
+      .set({
+        title: parsed.data.title,
+        excerpt: parsed.data.excerpt,
+        content: parsed.data.content,
+        date: parsed.data.date,
+        category: parsed.data.category,
+        readTime: parsed.data.read_time,
+        coverEmoji: parsed.data.cover_emoji,
+      })
+      .where(eq(blogPosts.slug, slug));
+
+    revalidatePath("/admin/blog");
+    revalidatePath("/");
+    revalidatePath("/blog");
+    revalidatePath(`/blog/${slug}`);
+    return { success: true };
+  } catch (e) {
+    console.error("updateBlogPost failed:", e);
+    return { success: false, error: "Failed to update blog post" };
+  }
 }
 
-export async function deleteBlogPost(slug: string) {
-  await verifyAdmin();
-  const sql = getDb();
-  await sql`DELETE FROM blog_posts WHERE slug = ${slug}`;
-  revalidatePath("/admin/blog");
-  revalidatePath("/");
-  revalidatePath("/blog");
+export async function deleteBlogPost(slug: string): Promise<ActionResult> {
+  try {
+    await verifyAdmin();
+    const db = getDb();
+    await db.delete(blogPosts).where(eq(blogPosts.slug, slug));
+    revalidatePath("/admin/blog");
+    revalidatePath("/");
+    revalidatePath("/blog");
+    return { success: true };
+  } catch (e) {
+    console.error("deleteBlogPost failed:", e);
+    return { success: false, error: "Failed to delete blog post" };
+  }
 }
 
 // ---- Matches ----
 
-export async function updateMatchScore(id: string, formData: FormData) {
-  await verifyAdmin();
-  const sql = getDb();
+export async function updateMatchScore(
+  id: string,
+  _prev: ActionResult,
+  formData: FormData
+): Promise<ActionResult> {
+  try {
+    await verifyAdmin();
+    const parsed = parseFormData(updateMatchScoreSchema, formData);
+    if (!parsed.success) return { success: false, error: parsed.error };
 
-  const homeScore = parseInt(formData.get("home_score") as string);
-  const awayScore = parseInt(formData.get("away_score") as string);
-  const status = formData.get("status") as string;
+    const { home_score, away_score, status } = parsed.data;
 
-  await sql`
-    UPDATE matches SET
-      home_score = ${isNaN(homeScore) ? null : homeScore},
-      away_score = ${isNaN(awayScore) ? null : awayScore},
-      status = ${status}
-    WHERE id = ${id}
-  `;
+    const db = getDb();
+    await db
+      .update(matches)
+      .set({
+        homeScore: home_score,
+        awayScore: away_score,
+        status,
+      })
+      .where(eq(matches.id, id));
 
-  // If match just finished, recalculate points for all predictions
-  if (status === "finished" && !isNaN(homeScore) && !isNaN(awayScore)) {
-    const predictions = await sql`
-      SELECT id, home_score, away_score FROM predictions WHERE match_id = ${id}
-    `;
-    for (const p of predictions) {
-      const { points } = calculateScore(
-        { homeScore: p.home_score, awayScore: p.away_score },
-        { homeScore, awayScore }
-      );
-      await sql`UPDATE predictions SET points_earned = ${points} WHERE id = ${p.id}`;
+    // If match just finished, recalculate points for all predictions
+    if (status === "finished") {
+      const preds = await getPredictionsForMatch(id);
+      for (const p of preds) {
+        const { points } = calculateScore(
+          { homeScore: p.homeScore, awayScore: p.awayScore },
+          { homeScore: home_score, awayScore: away_score }
+        );
+        await updatePredictionPoints(p.id, points);
+      }
     }
+
+    revalidatePath("/admin/matches");
+    revalidatePath("/admin/leaderboard");
+    revalidatePath("/world-cup");
+    return { success: true };
+  } catch (e) {
+    console.error("updateMatchScore failed:", e);
+    return { success: false, error: "Failed to update match score" };
   }
-
-  revalidatePath("/admin/matches");
-  revalidatePath("/admin/leaderboard");
-  revalidatePath("/fantasy");
 }
 
-export async function createMatch(formData: FormData) {
-  await verifyAdmin();
-  const sql = getDb();
-  const id = `m${Date.now()}`;
-  await sql`
-    INSERT INTO matches (id, home_team, away_team, home_flag, away_flag, kickoff, status, stage, group_name)
-    VALUES (
-      ${id},
-      ${formData.get("home_team") as string},
-      ${formData.get("away_team") as string},
-      ${formData.get("home_flag") as string},
-      ${formData.get("away_flag") as string},
-      ${formData.get("kickoff") as string},
-      ${"upcoming"},
-      ${formData.get("stage") as string},
-      ${(formData.get("group_name") as string) || null}
-    )
-  `;
-  revalidatePath("/admin/matches");
-  revalidatePath("/fantasy");
+export async function createMatch(
+  _prev: ActionResult,
+  formData: FormData
+): Promise<ActionResult> {
+  try {
+    await verifyAdmin();
+    const parsed = parseFormData(createMatchSchema, formData);
+    if (!parsed.success) return { success: false, error: parsed.error };
+
+    const db = getDb();
+    const id = `m${Date.now()}`;
+    await db.insert(matches).values({
+      id,
+      homeTeam: parsed.data.home_team,
+      awayTeam: parsed.data.away_team,
+      homeFlag: parsed.data.home_flag,
+      awayFlag: parsed.data.away_flag,
+      kickoff: parsed.data.kickoff,
+      status: "upcoming",
+      stage: parsed.data.stage,
+      groupName: parsed.data.group_name ?? null,
+    });
+
+    revalidatePath("/admin/matches");
+    revalidatePath("/world-cup");
+    return { success: true };
+  } catch (e) {
+    console.error("createMatch failed:", e);
+    return { success: false, error: "Failed to create match" };
+  }
 }
 
-export async function updateMatch(id: string, formData: FormData) {
-  await verifyAdmin();
-  const sql = getDb();
-  await sql`
-    UPDATE matches SET
-      home_team = ${formData.get("home_team") as string},
-      away_team = ${formData.get("away_team") as string},
-      home_flag = ${formData.get("home_flag") as string},
-      away_flag = ${formData.get("away_flag") as string},
-      kickoff = ${formData.get("kickoff") as string},
-      stage = ${formData.get("stage") as string},
-      group_name = ${(formData.get("group_name") as string) || null}
-    WHERE id = ${id}
-  `;
-  revalidatePath("/admin/matches");
-  revalidatePath("/fantasy");
+export async function updateMatch(
+  id: string,
+  _prev: ActionResult,
+  formData: FormData
+): Promise<ActionResult> {
+  try {
+    await verifyAdmin();
+    const parsed = parseFormData(createMatchSchema, formData);
+    if (!parsed.success) return { success: false, error: parsed.error };
+
+    const db = getDb();
+    await db
+      .update(matches)
+      .set({
+        homeTeam: parsed.data.home_team,
+        awayTeam: parsed.data.away_team,
+        homeFlag: parsed.data.home_flag,
+        awayFlag: parsed.data.away_flag,
+        kickoff: parsed.data.kickoff,
+        stage: parsed.data.stage,
+        groupName: parsed.data.group_name ?? null,
+      })
+      .where(eq(matches.id, id));
+
+    revalidatePath("/admin/matches");
+    revalidatePath("/world-cup");
+    return { success: true };
+  } catch (e) {
+    console.error("updateMatch failed:", e);
+    return { success: false, error: "Failed to update match" };
+  }
 }
 
-export async function deleteMatch(id: string) {
-  await verifyAdmin();
-  const sql = getDb();
-  // Delete predictions for this match first
-  await sql`DELETE FROM predictions WHERE match_id = ${id}`;
-  await sql`DELETE FROM matches WHERE id = ${id}`;
-  revalidatePath("/admin/matches");
-  revalidatePath("/admin/leaderboard");
-  revalidatePath("/fantasy");
+export async function deleteMatch(id: string): Promise<ActionResult> {
+  try {
+    await verifyAdmin();
+    const db = getDb();
+    await db.delete(predictions).where(eq(predictions.matchId, id));
+    await db.delete(matches).where(eq(matches.id, id));
+    revalidatePath("/admin/matches");
+    revalidatePath("/admin/leaderboard");
+    revalidatePath("/world-cup");
+    return { success: true };
+  } catch (e) {
+    console.error("deleteMatch failed:", e);
+    return { success: false, error: "Failed to delete match" };
+  }
 }
 
 // ---- Fantasy Users ----
 
-export async function deleteFantasyUser(id: number) {
-  await verifyAdmin();
-  const sql = getDb();
-  await sql`DELETE FROM predictions WHERE user_id = ${id}`;
-  await sql`DELETE FROM fantasy_users WHERE id = ${id}`;
-  revalidatePath("/admin/leaderboard");
-  revalidatePath("/fantasy");
+export async function deleteFantasyUser(id: number): Promise<ActionResult> {
+  try {
+    await verifyAdmin();
+    const db = getDb();
+    await db.delete(predictions).where(eq(predictions.userId, id));
+    await db.delete(fantasyUsers).where(eq(fantasyUsers.id, id));
+    revalidatePath("/admin/leaderboard");
+    revalidatePath("/world-cup");
+    return { success: true };
+  } catch (e) {
+    console.error("deleteFantasyUser failed:", e);
+    return { success: false, error: "Failed to delete user" };
+  }
 }
 
-export async function updateFantasyUser(id: number, formData: FormData) {
-  await verifyAdmin();
-  const sql = getDb();
-  await sql`
-    UPDATE fantasy_users SET
-      name = ${formData.get("name") as string},
-      avatar = ${formData.get("avatar") as string}
-    WHERE id = ${id}
-  `;
-  revalidatePath("/admin/leaderboard");
-  revalidatePath("/fantasy");
+export async function updateFantasyUser(
+  id: number,
+  _prev: ActionResult,
+  formData: FormData
+): Promise<ActionResult> {
+  try {
+    await verifyAdmin();
+    const parsed = parseFormData(updateFantasyUserSchema, formData);
+    if (!parsed.success) return { success: false, error: parsed.error };
+
+    const db = getDb();
+    await db
+      .update(fantasyUsers)
+      .set({
+        name: parsed.data.name,
+        avatar: parsed.data.avatar,
+      })
+      .where(eq(fantasyUsers.id, id));
+
+    revalidatePath("/admin/leaderboard");
+    revalidatePath("/world-cup");
+    return { success: true };
+  } catch (e) {
+    console.error("updateFantasyUser failed:", e);
+    return { success: false, error: "Failed to update user" };
+  }
 }
