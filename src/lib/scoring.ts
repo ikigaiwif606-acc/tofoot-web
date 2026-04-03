@@ -1,4 +1,4 @@
-import type { Match, Prediction } from "./fantasy-data";
+import type { Match, Prediction } from "./db/queries";
 
 export interface ScoreBreakdown {
   points: number;

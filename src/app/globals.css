@@ -1,160 +1,119 @@
 @import "tailwindcss";
 
 :root {
-  /* Stadium Night palette */
-  --background: #050a0f;
-  --foreground: #f0f0f0;
-  --accent: #00ff88;
-  --accent-dark: #00cc6a;
-  --card-bg: rgba(255, 255, 255, 0.04);
-  --card-border: rgba(255, 255, 255, 0.08);
-  --muted: #6b7280;
+  /* Matchday Experience palette */
+  --background: #0a0e14;
+  --foreground: #F5F5F5;
+  --accent: #FF6B35;
+  --accent-hover: #E55A2B;
+  --secondary: #3B82F6;
+  --gold: #F59E0B;
+  --success: #22C55E;
+  --danger: #EF4444;
 
-  /* Neon colors */
-  --neon-blue: #00d4ff;
-  --neon-gold: #ffd700;
-  --neon-pink: #ff3d8e;
-
-  /* Glass tokens */
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-blur: 12px;
+  /* Surfaces */
+  --card-bg: rgba(255, 255, 255, 0.06);
+  --card-border: rgba(255, 255, 255, 0.10);
+  --surface-hover: rgba(255, 255, 255, 0.10);
+  --muted: #94A3B8;
 
   /* Glow shadows */
-  --glow-green: 0 0 20px rgba(0, 255, 136, 0.25);
-  --glow-blue: 0 0 20px rgba(0, 212, 255, 0.25);
-  --glow-gold: 0 0 20px rgba(255, 215, 0, 0.25);
+  --glow-accent: 0 0 20px rgba(255, 107, 53, 0.25);
+  --glow-secondary: 0 0 20px rgba(59, 130, 246, 0.25);
+  --glow-gold: 0 0 20px rgba(245, 158, 11, 0.25);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-accent: var(--accent);
-  --color-accent-dark: var(--accent-dark);
+  --color-accent-hover: var(--accent-hover);
+  --color-secondary: var(--secondary);
+  --color-gold: var(--gold);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
   --color-card-bg: var(--card-bg);
   --color-card-border: var(--card-border);
+  --color-surface-hover: var(--surface-hover);
   --color-muted: var(--muted);
-  --color-neon-blue: var(--neon-blue);
-  --color-neon-gold: var(--neon-gold);
-  --color-neon-pink: var(--neon-pink);
-  --color-glass-bg: var(--glass-bg);
-  --color-glass-border: var(--glass-border);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-plus-jakarta);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains);
 }
 
 body {
   background:
-    radial-gradient(ellipse at 20% 50%, rgba(0, 255, 136, 0.05) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(0, 212, 255, 0.03) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 90%, rgba(255, 215, 0, 0.02) 0%, transparent 50%),
+    radial-gradient(ellipse at 20% 50%, rgba(255, 107, 53, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(59, 130, 246, 0.03) 0%, transparent 50%),
     var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), "Noto Sans TC", sans-serif;
 }
 
 ::selection {
   background: var(--accent);
-  color: #000;
+  color: #fff;
 }
 
-/* ---- Glass utility classes ---- */
-
-.glass {
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+h1, h2, h3 {
+  font-family: var(--font-heading), "Noto Sans TC", sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
-.glass-strong {
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+/* ---- Card surfaces ---- */
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
 }
 
-.glass-hover:hover {
-  border-color: rgba(0, 255, 136, 0.3);
-  box-shadow: 0 0 20px rgba(0, 255, 136, 0.1), 0 4px 30px rgba(0, 0, 0, 0.3);
+.card-feature {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-left: 3px solid var(--accent);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
 }
 
-/* ---- Neon utilities ---- */
-
-.neon-text {
-  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5), 0 0 30px rgba(0, 255, 136, 0.15);
-}
-
-.neon-text-blue {
-  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5), 0 0 30px rgba(0, 212, 255, 0.15);
-}
-
-.neon-text-gold {
-  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 0 0 30px rgba(255, 215, 0, 0.15);
-}
-
-.neon-glow {
-  box-shadow: var(--glow-green);
-}
-
-.neon-glow-blue {
-  box-shadow: var(--glow-blue);
-}
-
-.neon-glow-gold {
-  box-shadow: var(--glow-gold);
-}
-
-/* ---- Neon button ---- */
-
-.btn-neon {
-  background: linear-gradient(135deg, #00ff88, #00cc6a);
-  color: #000;
-  font-weight: 700;
-  box-shadow: 0 0 15px rgba(0, 255, 136, 0.3), 0 0 30px rgba(0, 255, 136, 0.1);
+.card-interactive {
   transition: all 0.3s ease;
 }
 
-.btn-neon:hover {
-  box-shadow: 0 0 25px rgba(0, 255, 136, 0.5), 0 0 50px rgba(0, 255, 136, 0.15);
-  transform: translateY(-1px);
+.card-interactive:hover {
+  border-color: rgba(255, 107, 53, 0.3);
+  background: var(--surface-hover);
+}
+
+/* ---- Navigation surface ---- */
+
+.surface-nav {
+  background: rgba(10, 14, 20, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--card-border);
 }
 
 /* ---- Scoreboard digits ---- */
 
 .scoreboard-digit {
-  background: rgba(0, 255, 136, 0.08);
-  border: 1px solid rgba(0, 255, 136, 0.2);
-  border-radius: 8px;
-  font-family: var(--font-mono);
+  background: rgba(255, 107, 53, 0.08);
+  border: 1px solid rgba(255, 107, 53, 0.2);
+  border-radius: 0.5rem;
+  font-family: var(--font-mono), monospace;
   font-variant-numeric: tabular-nums;
   color: var(--accent);
-  text-shadow: 0 0 10px rgba(0, 255, 136, 0.6);
 }
 
-/* ---- Pitch line decorations ---- */
+/* ---- Pitch decorations ---- */
 
 .pitch-lines {
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
   background-size: 40px 40px;
-}
-
-.pitch-corner {
-  position: relative;
-}
-
-.pitch-corner::before {
-  content: "";
-  position: absolute;
-  width: 80px;
-  height: 80px;
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  border-radius: 50%;
-  pointer-events: none;
 }
 
 /* ---- Animations ---- */
@@ -166,7 +125,7 @@ body {
 
 @keyframes save-flash {
   0% { transform: scale(1); }
-  50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(0, 255, 136, 0.5); }
+  50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 107, 53, 0.5); }
   100% { transform: scale(1); }
 }
 
@@ -180,20 +139,14 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes neon-pulse {
-  0%, 100% { box-shadow: 0 0 10px rgba(0, 255, 136, 0.2); }
-  50% { box-shadow: 0 0 25px rgba(0, 255, 136, 0.4); }
-}
-
-@keyframes float-orb {
-  0%, 100% { transform: translate(0, 0); }
-  33% { transform: translate(10px, -10px); }
-  66% { transform: translate(-5px, 5px); }
+@keyframes accent-pulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(255, 107, 53, 0.2); }
+  50% { box-shadow: 0 0 25px rgba(255, 107, 53, 0.4); }
 }
 
 @keyframes glow-border {
-  0%, 100% { border-color: rgba(0, 255, 136, 0.15); }
-  50% { border-color: rgba(0, 255, 136, 0.35); }
+  0%, 100% { border-color: rgba(255, 107, 53, 0.15); }
+  50% { border-color: rgba(255, 107, 53, 0.35); }
 }
 
 .animate-fade-in {
@@ -222,12 +175,8 @@ body {
   animation: slide-up 0.3s ease-out forwards;
 }
 
-.animate-neon-pulse {
-  animation: neon-pulse 3s ease-in-out infinite;
-}
-
-.animate-float {
-  animation: float-orb 8s ease-in-out infinite;
+.animate-accent-pulse {
+  animation: accent-pulse 3s ease-in-out infinite;
 }
 
 .animate-glow-border {

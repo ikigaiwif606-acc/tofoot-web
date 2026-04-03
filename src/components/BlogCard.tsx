@@ -1,11 +1,11 @@
 import Link from "next/link";
-import type { BlogPost } from "@/lib/data";
+import type { BlogPost } from "@/lib/db/queries";
 
 export default function BlogCard({ post }: { post: BlogPost }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group flex gap-4 rounded-xl glass glass-hover p-5 transition-all duration-300"
+      className="group flex gap-4 rounded-xl card card-interactive p-6"
     >
       <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-3xl transition-transform duration-300 group-hover:scale-110">
         {post.coverEmoji}

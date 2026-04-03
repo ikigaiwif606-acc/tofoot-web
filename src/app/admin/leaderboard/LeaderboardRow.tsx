@@ -33,7 +33,7 @@ export default function LeaderboardRow({
           >
             <input
               name="avatar"
-              defaultValue={entry.avatar}
+              defaultValue={entry.avatar ?? "⚽"}
               className="w-12 rounded border border-card-border bg-background px-2 py-1 text-center text-sm focus:border-accent focus:outline-none"
               placeholder="Emoji"
             />
