@@ -27,7 +27,7 @@ export default function VideosClient({
 
   return (
     <main className="flex-1">
-      <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
         <h1 className="text-3xl font-bold sm:text-4xl">影片 Videos</h1>
         <p className="mt-2 text-muted">
           所有 ToFoot 頻道影片。點擊觀看完整內容。

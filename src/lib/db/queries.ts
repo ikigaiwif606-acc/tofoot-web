@@ -1,5 +1,5 @@
 import "server-only";
-import { eq, desc, asc, sql, count, and, gt } from "drizzle-orm";
+import { eq, desc, asc, sql, count, and } from "drizzle-orm";
 import { getDb } from "./index";
 import {
   videos,
