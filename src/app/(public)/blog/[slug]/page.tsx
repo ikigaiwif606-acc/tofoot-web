@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getBlogPosts, getBlogPost } from "@/lib/db/queries";
+import NewsletterForm from "@/components/NewsletterForm";
+import BlogContent from "./BlogContent";
 
 export const dynamic = "force-dynamic";
-import NewsletterForm from "@/components/NewsletterForm";
 
 export async function generateStaticParams() {
   try {
@@ -26,86 +27,6 @@ export async function generateMetadata({
     title: `${post.title} | ToFoot 火光足球`,
     description: post.excerpt,
   };
-}
-
-function renderContent(content: string) {
-  const lines = content.split("\n");
-  const elements: React.ReactNode[] = [];
-  let listItems: string[] = [];
-
-  const flushList = () => {
-    if (listItems.length > 0) {
-      elements.push(
-        <ul
-          key={`list-${elements.length}`}
-          className="my-4 space-y-2 pl-6 list-disc text-muted"
-        >
-          {listItems.map((item, i) => (
-            <li key={i} className="leading-relaxed">
-              {item.includes("**") ? (
-                <span>
-                  <strong className="text-foreground">
-                    {item.match(/\*\*(.*?)\*\*/)?.[1]}
-                  </strong>
-                  {item.replace(/\*\*.*?\*\*/, "")}
-                </span>
-              ) : (
-                item
-              )}
-            </li>
-          ))}
-        </ul>
-      );
-      listItems = [];
-    }
-  };
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const trimmed = line.trim();
-
-    if (trimmed.startsWith("## ")) {
-      flushList();
-      elements.push(
-        <h2
-          key={`h2-${i}`}
-          className="mt-10 mb-4 text-xl font-bold text-foreground sm:text-2xl"
-        >
-          {trimmed.slice(3)}
-        </h2>
-      );
-    } else if (trimmed.startsWith("- ")) {
-      listItems.push(trimmed.slice(2));
-    } else if (trimmed.match(/^\d+\.\s/)) {
-      listItems.push(trimmed.replace(/^\d+\.\s/, ""));
-    } else if (trimmed === "") {
-      flushList();
-    } else {
-      flushList();
-      elements.push(
-        <p key={`p-${i}`} className="my-4 leading-relaxed text-muted">
-          {trimmed.includes("**") ? (
-            <>
-              {trimmed.split(/(\*\*.*?\*\*)/).map((part, j) =>
-                part.startsWith("**") && part.endsWith("**") ? (
-                  <strong key={j} className="text-foreground">
-                    {part.slice(2, -2)}
-                  </strong>
-                ) : (
-                  <span key={j}>{part}</span>
-                )
-              )}
-            </>
-          ) : (
-            trimmed
-          )}
-        </p>
-      );
-    }
-  }
-
-  flushList();
-  return elements;
 }
 
 export default async function BlogPostPage({
@@ -139,7 +60,7 @@ export default async function BlogPostPage({
         </div>
 
         <div className="mt-8 border-t border-card-border pt-8">
-          {renderContent(post.content)}
+          <BlogContent content={post.content} />
         </div>
 
         <div className="mt-12">
