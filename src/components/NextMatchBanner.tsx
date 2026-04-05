@@ -32,26 +32,40 @@ export default function NextMatchBanner({ match }: NextMatchBannerProps) {
   );
 
   return (
-    <div className="border-b border-accent/10 bg-accent/[0.03]">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-3 text-sm">
-          <span className="animate-accent-pulse rounded-full bg-accent/15 px-2 py-0.5 text-xs font-bold text-accent">
-            NEXT
+    <div
+      className="border-b"
+      style={{
+        background: "rgba(0, 255, 255, 0.06)",
+        borderColor: "rgba(0, 255, 255, 0.2)",
+        padding: "7px 0",
+      }}
+    >
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center gap-3">
+          <span
+            className="animate-blink-live font-display text-[9px] font-bold tracking-[1px]"
+            style={{
+              border: "1px solid rgba(0, 255, 255, 0.4)",
+              color: "#00ffff",
+              padding: "2px 8px",
+            }}
+          >
+            LIVE
           </span>
-          <span className="text-muted">
+          <span className="font-tech text-[11px] text-muted">
             {match.homeFlag} {match.homeTeam} vs {match.awayTeam}{" "}
             {match.awayFlag}
-          </span>
-          <span className="hidden text-xs text-muted sm:inline">
-            — {days > 0 ? `${days}天 ` : ""}
-            {hours}小時後開賽
+            <span className="hidden sm:inline" style={{ color: "#ff00ff" }}>
+              {" "}// {days > 0 ? `${days}D ` : ""}{hours}H
+            </span>
           </span>
         </div>
         <Link
           href="/world-cup/predict"
-          className="rounded-md card px-3 py-1 text-xs font-medium text-accent transition-all hover:bg-surface-hover"
+          className="font-display text-[9px] font-bold tracking-[1px] text-neon-magenta transition-colors hover:text-neon-cyan"
+          style={{ textShadow: "0 0 6px #ff00ff" }}
         >
-          去預測
+          PREDICT →
         </Link>
       </div>
     </div>

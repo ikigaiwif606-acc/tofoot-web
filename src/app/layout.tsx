@@ -1,25 +1,26 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Inter, JetBrains_Mono } from "next/font/google";
+import { Orbitron, Rajdhani, Share_Tech_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 
-const plusJakarta = Plus_Jakarta_Sans({
-  variable: "--font-plus-jakarta",
+const orbitron = Orbitron({
+  variable: "--font-orbitron",
   subsets: ["latin"],
-  weight: ["600", "700", "800"],
+  weight: ["400", "700", "900"],
   display: "swap",
 });
 
-const inter = Inter({
-  variable: "--font-inter",
+const rajdhani = Rajdhani({
+  variable: "--font-rajdhani",
   subsets: ["latin"],
+  weight: ["500", "600", "700"],
   display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains",
+const shareTechMono = Share_Tech_Mono({
+  variable: "--font-share-tech",
   subsets: ["latin"],
-  weight: ["400", "700"],
+  weight: "400",
   display: "swap",
 });
 
@@ -53,9 +54,9 @@ export default function RootLayout({
   return (
     <html
       lang="zh-TW"
-      className={`${plusJakarta.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${orbitron.variable} ${rajdhani.variable} ${shareTechMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="page-wrapper min-h-full flex flex-col">
         {children}
         <Toaster position="top-right" theme="dark" richColors />
       </body>

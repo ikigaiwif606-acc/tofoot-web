@@ -15,7 +15,7 @@ export default async function PublicLayout({
     <>
       <Header />
       <NextMatchBanner match={nextMatch ?? null} />
-      <div className="pb-16 md:pb-0">{children}</div>
+      <div className="pb-14 md:pb-0">{children}</div>
       <Footer />
       <MobileBottomNav />
     </>

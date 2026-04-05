@@ -1,119 +1,287 @@
 @import "tailwindcss";
 
 :root {
-  /* Cyberpunk palette */
-  --background: #0a0e14;
-  --foreground: #F5F5F5;
-  --accent: #8B5CF6;
-  --accent-hover: #7C3AED;
-  --secondary: #EC4899;
-  --gold: #F59E0B;
+  /* backgrounds */
+  --bg-primary: #030308;
+  --bg-surface: #06060f;
+  --bg-sidebar: #06060f;
+  --bg-ticker: rgba(0, 255, 255, 0.06);
+
+  /* neon accents */
+  --neon-cyan: #00ffff;
+  --neon-magenta: #ff00ff;
+  --neon-yellow: #ffee00;
+
+  /* borders */
+  --border-default: rgba(0, 255, 255, 0.13);
+  --border-subtle: #0d0d22;
+  --border-surface: #0d0d1a;
+
+  /* text */
+  --text-primary: #c8d6e5;
+  --text-muted: #8899aa;
+  --text-dim: #556677;
+  --text-ghost: #2a3a4a;
+
+  /* glow shadows */
+  --glow-cyan: 0 0 8px #00ffff;
+  --glow-magenta: 0 0 8px #ff00ff;
+  --glow-yellow: 0 0 5px #ffee00;
+
+  /* legacy compat aliases */
+  --background: #030308;
+  --foreground: #c8d6e5;
+  --accent: #00ffff;
+  --accent-hover: #00cccc;
+  --secondary: #ff00ff;
+  --gold: #ffee00;
   --success: #22C55E;
   --danger: #EF4444;
-
-  /* Surfaces */
-  --card-bg: rgba(255, 255, 255, 0.06);
-  --card-border: rgba(255, 255, 255, 0.10);
-  --surface-hover: rgba(255, 255, 255, 0.10);
-  --muted: #94A3B8;
-
-  /* Glow shadows */
-  --glow-accent: 0 0 20px rgba(139, 92, 246, 0.25);
-  --glow-secondary: 0 0 20px rgba(236, 72, 153, 0.25);
-  --glow-gold: 0 0 20px rgba(245, 158, 11, 0.25);
+  --card-bg: #06060f;
+  --card-border: #0d0d22;
+  --surface-hover: rgba(0, 255, 255, 0.04);
+  --muted: #8899aa;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-accent: var(--accent);
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--text-primary);
+  --color-accent: var(--neon-cyan);
   --color-accent-hover: var(--accent-hover);
-  --color-secondary: var(--secondary);
-  --color-gold: var(--gold);
+  --color-secondary: var(--neon-magenta);
+  --color-gold: var(--neon-yellow);
   --color-success: var(--success);
   --color-danger: var(--danger);
   --color-card-bg: var(--card-bg);
   --color-card-border: var(--card-border);
   --color-surface-hover: var(--surface-hover);
-  --color-muted: var(--muted);
-  --font-heading: var(--font-plus-jakarta);
-  --font-sans: var(--font-inter);
-  --font-mono: var(--font-jetbrains);
+  --color-muted: var(--text-muted);
+  --color-neon-cyan: var(--neon-cyan);
+  --color-neon-magenta: var(--neon-magenta);
+  --color-neon-yellow: var(--neon-yellow);
+  --color-bg-surface: var(--bg-surface);
+  --color-border-default: var(--border-default);
+  --color-border-subtle: var(--border-subtle);
+  --color-text-dim: var(--text-dim);
+  --color-text-ghost: var(--text-ghost);
+  --font-display: var(--font-orbitron);
+  --font-body: var(--font-rajdhani);
+  --font-mono: var(--font-share-tech);
 }
 
+/* ---- Base ---- */
+
 body {
-  background:
-    radial-gradient(ellipse at 20% 50%, rgba(139, 92, 246, 0.04) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(236, 72, 153, 0.03) 0%, transparent 50%),
-    var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), "Noto Sans TC", sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body), "Noto Sans TC", sans-serif;
+  font-weight: 500;
 }
 
 ::selection {
-  background: var(--accent);
+  background: rgba(0, 255, 255, 0.3);
   color: #fff;
 }
 
 h1, h2, h3 {
-  font-family: var(--font-heading), "Noto Sans TC", sans-serif;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-family: var(--font-display), sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ---- CRT Grid overlay ---- */
+
+.page-wrapper {
+  position: relative;
+}
+
+.page-wrapper::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ---- Scanlines ---- */
+
+.scanlines {
+  position: relative;
+}
+
+.scanlines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.15) 2px,
+    rgba(0, 0, 0, 0.15) 4px
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ---- Navbar ---- */
+
+.navbar {
+  position: relative;
+  background: var(--bg-primary);
+  border-bottom: 1px solid rgba(0, 255, 255, 0.27);
+  height: 52px;
+}
+
+.navbar::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00ffff, #ff00ff, #00ffff, transparent);
+}
+
+/* ---- Section titles ---- */
+
+.section-title {
+  font-family: var(--font-display), sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #00ffff;
+  text-shadow: 0 0 8px #00ffff;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+  padding-bottom: 10px;
+  margin-bottom: 16px;
+}
+
+.section-title::before {
+  content: '';
+  display: inline-block;
+  width: 2px;
+  height: 14px;
+  background: #00ffff;
+  box-shadow: 0 0 6px #00ffff;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+/* ---- Tags ---- */
+
+.tag {
+  font-family: var(--font-display), sans-serif;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border-radius: 2px;
+  padding: 3px 10px;
+  display: inline-block;
+}
+
+.tag-cyan {
+  border: 1px solid rgba(0, 255, 255, 0.4);
+  background: rgba(0, 255, 255, 0.08);
+  color: #00ffff;
+  text-shadow: 0 0 6px #00ffff;
+}
+
+.tag-magenta {
+  border: 1px solid rgba(255, 0, 255, 0.4);
+  background: rgba(255, 0, 255, 0.08);
+  color: #ff00ff;
+  text-shadow: 0 0 6px #ff00ff;
+}
+
+.tag-yellow {
+  border: 1px solid rgba(255, 238, 0, 0.4);
+  background: rgba(255, 238, 0, 0.08);
+  color: #ffee00;
+  text-shadow: 0 0 5px #ffee00;
 }
 
 /* ---- Card surfaces ---- */
 
 .card {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 0.75rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0;
   padding: 1.5rem;
 }
 
 .card-feature {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-left: 3px solid var(--accent);
-  border-radius: 0.75rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-left: 2px solid #00ffff;
+  border-radius: 0;
   padding: 1.5rem;
 }
 
 .card-interactive {
-  transition: all 0.3s ease;
+  transition: border-color 0.2s ease;
 }
 
 .card-interactive:hover {
-  border-color: rgba(139, 92, 246, 0.3);
-  background: var(--surface-hover);
+  border-color: rgba(0, 255, 255, 0.27);
 }
 
 /* ---- Navigation surface ---- */
 
 .surface-nav {
-  background: rgba(10, 14, 20, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--card-border);
+  background: var(--bg-primary);
+  border-bottom: 1px solid rgba(0, 255, 255, 0.27);
+}
+
+/* ---- Neon gradient top accent ---- */
+
+.neon-top-accent {
+  position: relative;
+}
+
+.neon-top-accent::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #00ffff, #ff00ff, #00ffff);
+}
+
+/* ---- Countdown digits ---- */
+
+.count-number {
+  font-family: var(--font-display), sans-serif;
+  font-size: 26px;
+  font-weight: 900;
+  color: #00ffff;
+  text-shadow: 0 0 12px #00ffff, 0 0 24px rgba(0, 255, 255, 0.4);
+}
+
+.count-label {
+  font-family: var(--font-mono), monospace;
+  font-size: 9px;
+  color: #112244;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
 /* ---- Scoreboard digits ---- */
 
 .scoreboard-digit {
-  background: rgba(139, 92, 246, 0.08);
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 0.5rem;
-  font-family: var(--font-mono), monospace;
+  background: rgba(0, 255, 255, 0.06);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 0;
+  font-family: var(--font-display), sans-serif;
   font-variant-numeric: tabular-nums;
-  color: var(--accent);
-}
-
-/* ---- Pitch decorations ---- */
-
-.pitch-lines {
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-  background-size: 40px 40px;
+  color: #00ffff;
 }
 
 /* ---- Animations ---- */
@@ -123,10 +291,9 @@ h1, h2, h3 {
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes save-flash {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(139, 92, 246, 0.5); }
-  100% { transform: scale(1); }
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes pulse-soft {
@@ -134,19 +301,24 @@ h1, h2, h3 {
   50% { opacity: 0.6; }
 }
 
-@keyframes slide-up {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes blink-live {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes glow-cyan {
+  0%, 100% { text-shadow: 0 0 8px #00ffff; }
+  50% { text-shadow: 0 0 16px #00ffff, 0 0 32px rgba(0, 255, 255, 0.4); }
 }
 
 @keyframes accent-pulse {
-  0%, 100% { box-shadow: 0 0 10px rgba(139, 92, 246, 0.2); }
-  50% { box-shadow: 0 0 25px rgba(139, 92, 246, 0.4); }
+  0%, 100% { box-shadow: 0 0 8px rgba(0, 255, 255, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(0, 255, 255, 0.4); }
 }
 
 @keyframes glow-border {
-  0%, 100% { border-color: rgba(139, 92, 246, 0.15); }
-  50% { border-color: rgba(139, 92, 246, 0.35); }
+  0%, 100% { border-color: rgba(0, 255, 255, 0.13); }
+  50% { border-color: rgba(0, 255, 255, 0.4); }
 }
 
 .animate-fade-in {
@@ -163,16 +335,20 @@ h1, h2, h3 {
   opacity: 0;
 }
 
-.animate-save-flash {
-  animation: save-flash 0.4s ease-out;
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out forwards;
 }
 
 .animate-pulse-soft {
   animation: pulse-soft 2s ease-in-out infinite;
 }
 
-.animate-slide-up {
-  animation: slide-up 0.3s ease-out forwards;
+.animate-blink-live {
+  animation: blink-live 1.5s step-end infinite;
+}
+
+.animate-glow-cyan {
+  animation: glow-cyan 3s ease-in-out infinite;
 }
 
 .animate-accent-pulse {
@@ -182,3 +358,9 @@ h1, h2, h3 {
 .animate-glow-border {
   animation: glow-border 3s ease-in-out infinite;
 }
+
+/* ---- Utility ---- */
+
+.font-display { font-family: var(--font-display), sans-serif; }
+.font-body { font-family: var(--font-body), sans-serif; }
+.font-tech { font-family: var(--font-mono), monospace; }

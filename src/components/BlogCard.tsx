@@ -2,26 +2,43 @@ import Link from "next/link";
 import type { BlogPost } from "@/lib/db/queries";
 
 export default function BlogCard({ post }: { post: BlogPost }) {
+  const dateStr = post.date
+    ? new Date(post.date).toLocaleDateString("en-US", { month: "2-digit", day: "2-digit" }).replace("/", ".")
+    : "";
+
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group flex gap-4 rounded-xl card card-interactive p-6"
+      className="group flex gap-4 items-start py-3"
+      style={{ borderBottom: "1px solid #0a0a18" }}
     >
-      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-3xl transition-transform duration-300 group-hover:scale-110">
+      {/* Thumbnail */}
+      <div
+        className="scanlines shrink-0 flex items-center justify-center text-2xl"
+        style={{
+          width: 70,
+          height: 50,
+          border: "1px solid #0d0d22",
+          background: "#06060f",
+        }}
+      >
         {post.coverEmoji}
       </div>
+
+      {/* Content */}
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2 text-xs text-muted">
-          <span className="rounded-full bg-accent/10 px-2 py-0.5 font-medium text-accent">
-            {post.category}
-          </span>
-          <span>{post.date}</span>
-          <span>· {post.readTime}</span>
+        <div
+          className="font-tech text-[9px] tracking-[1px]"
+          style={{ color: "#ff00ff", textShadow: "0 0 6px #ff00ff" }}
+        >
+          // {post.category?.toUpperCase() || "ARTICLE"}
         </div>
-        <h3 className="mt-1 font-semibold leading-snug group-hover:text-accent transition-colors truncate">
+        <h3 className="mt-0.5 font-body text-[14px] font-bold leading-snug text-[#7a8fa8] transition-all duration-200 group-hover:text-neon-cyan truncate" style={{ textShadow: undefined }}>
           {post.title}
         </h3>
-        <p className="mt-1 text-sm text-muted line-clamp-2">{post.excerpt}</p>
+        <div className="mt-0.5 font-tech text-[10px] text-text-ghost">
+          {dateStr} // {post.readTime || "5 MIN"}
+        </div>
       </div>
     </Link>
   );

@@ -12,20 +12,20 @@ export default function Input({
   ...props
 }: InputProps) {
   const baseClasses =
-    "w-full rounded-lg border bg-black/20 px-4 py-3 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-1 transition-colors";
+    "w-full border bg-[#06060f] px-4 py-3 font-body text-sm text-foreground placeholder:text-text-dim focus:outline-none focus:ring-1 transition-colors";
   const stateClasses = error
-    ? "border-danger focus:border-danger focus:ring-danger/50"
-    : "border-card-border focus:border-accent focus:ring-accent/50";
+    ? "border-neon-magenta focus:border-neon-magenta focus:ring-neon-magenta/50"
+    : "border-border-subtle focus:border-neon-cyan focus:ring-neon-cyan/50";
 
   return (
     <div>
       {label && (
-        <label className="mb-1.5 block text-sm font-medium text-muted">
+        <label className="mb-1.5 block font-tech text-[10px] tracking-[1px] uppercase text-muted">
           {label}
         </label>
       )}
       <input className={`${baseClasses} ${stateClasses} ${className}`} {...props} />
-      {error && <p className="mt-1 text-xs text-danger">{error}</p>}
+      {error && <p className="mt-1 font-tech text-[10px] text-neon-magenta">{error}</p>}
     </div>
   );
 }

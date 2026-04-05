@@ -2,204 +2,287 @@ import Link from "next/link";
 import VideoCard from "@/components/VideoCard";
 import BlogCard from "@/components/BlogCard";
 import CountdownTimer from "@/components/world-cup/CountdownTimer";
-import { getVideos, getBlogPosts, getNextUpcomingMatch } from "@/lib/db/queries";
+import { getVideos, getBlogPosts } from "@/lib/db/queries";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const [videos, blogPosts, nextMatch] = await Promise.all([
+  const [videos, blogPosts] = await Promise.all([
     getVideos(),
     getBlogPosts(),
-    getNextUpcomingMatch(),
   ]);
 
+  const featuredVideo = videos[0];
+  const latestVideos = videos.slice(1, 5);
+  const latestPosts = blogPosts.slice(0, 6);
+
   return (
-    <main className="flex-1">
-      {/* Hero */}
-      <section className="relative overflow-hidden border-b border-card-border">
-        <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
-          <div className="animate-fade-in">
-            <span className="inline-block rounded-full card px-4 py-1.5 text-sm font-medium text-accent">
-              🇫🇷 法國人在台灣 🇹🇼
-            </span>
-          </div>
-          <h1 className="animate-fade-in mt-6 text-4xl font-bold leading-tight tracking-[-0.02em] sm:text-6xl">
-            用中文，帶你看懂
-            <br />
-            <span className="text-accent">歐洲足球</span>
-          </h1>
-          <p className="animate-fade-in-delay mt-6 max-w-xl text-lg text-muted">
-            我是 Tofu（李火光），來自法國的馬賽球迷，在台灣住了六年。
-            我用中文分享歐洲足球的深度分析、戰術解讀和文化觀察。
-          </p>
-
-          {/* Next match display */}
-          {nextMatch && (
-            <div className="animate-fade-in-delay mt-8 inline-flex items-center gap-4 rounded-xl card p-4">
-              <div className="text-center">
-                <div className="text-lg">
-                  {nextMatch.homeFlag}{" "}
-                  <span className="font-semibold">{nextMatch.homeTeam}</span>
-                </div>
+    <main className="flex-1 relative z-10">
+      {/* ===== HERO SECTION ===== */}
+      <section className="border-b" style={{ borderColor: "rgba(0, 255, 255, 0.13)" }}>
+        <div className="mx-auto max-w-7xl">
+          <div className="flex flex-col lg:flex-row">
+            {/* Hero main — featured article */}
+            <div className="flex-1 p-6 sm:p-8 lg:p-10">
+              <div className="animate-fade-in">
+                {featuredVideo ? (
+                  <a
+                    href={`https://www.youtube.com/watch?v=${featuredVideo.youtubeId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group block"
+                  >
+                    <div className="scanlines relative overflow-hidden" style={{ aspectRatio: "16/9" }}>
+                      <img
+                        src={`https://img.youtube.com/vi/${featuredVideo.youtubeId}/maxresdefault.jpg`}
+                        alt={featuredVideo.title}
+                        className="h-full w-full object-cover"
+                      />
+                      <div
+                        className="absolute bottom-3 left-3 font-tech text-[10px]"
+                        style={{
+                          background: "rgba(0, 0, 0, 0.85)",
+                          border: "1px solid rgba(0, 255, 255, 0.27)",
+                          color: "#00ffff",
+                          textShadow: "0 0 6px #00ffff",
+                          padding: "2px 8px",
+                        }}
+                      >
+                        {featuredVideo.duration}
+                      </div>
+                    </div>
+                    <div className="mt-4">
+                      <span
+                        className="font-tech text-[9px] tracking-[1px]"
+                        style={{ color: "#ffee00", textShadow: "0 0 5px #ffee00" }}
+                      >
+                        // FEATURED
+                      </span>
+                      <h1
+                        className="mt-2 font-display text-[26px] font-black leading-tight text-white transition-all duration-200 group-hover:text-neon-cyan"
+                        style={{ textShadow: "0 0 20px rgba(0, 255, 255, 0.15)" }}
+                      >
+                        {featuredVideo.title}
+                      </h1>
+                      {featuredVideo.description && (
+                        <p className="mt-2 font-body text-[14px] text-muted line-clamp-2">
+                          {featuredVideo.description}
+                        </p>
+                      )}
+                    </div>
+                  </a>
+                ) : (
+                  <div>
+                    <h1
+                      className="font-display text-[26px] font-black leading-tight text-white"
+                      style={{ textShadow: "0 0 20px rgba(0, 255, 255, 0.15)" }}
+                    >
+                      TOFOOT 火光足球
+                    </h1>
+                    <p className="mt-2 font-body text-[14px] text-muted">
+                      法國人在台灣，用中文帶你看懂歐洲足球。
+                    </p>
+                  </div>
+                )}
               </div>
-              <div className="text-xs font-bold text-muted">VS</div>
-              <div className="text-center">
-                <div className="text-lg">
-                  <span className="font-semibold">{nextMatch.awayTeam}</span>{" "}
-                  {nextMatch.awayFlag}
-                </div>
-              </div>
-              <Link
-                href="/world-cup/predict"
-                className="ml-2 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent-hover transition-colors"
-              >
-                開始預測
-              </Link>
             </div>
-          )}
 
-          <div className="animate-fade-in-delay-2 mt-8 flex flex-wrap gap-4">
-            <a
-              href="https://www.youtube.com/@ToFootwn"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-lg bg-red-600/90 px-6 py-3 font-semibold text-white transition-all hover:bg-red-600 hover:shadow-[0_0_20px_rgba(239,68,68,0.3)]"
+            {/* Trending sidebar */}
+            <div
+              className="w-full shrink-0 lg:w-[360px]"
+              style={{ borderLeft: "1px solid rgba(0, 255, 255, 0.13)" }}
             >
-              <svg
-                className="h-5 w-5"
-                fill="currentColor"
-                viewBox="0 0 24 24"
+              <div
+                className="px-4 py-3"
+                style={{
+                  background: "rgba(0, 255, 255, 0.04)",
+                  borderBottom: "1px solid rgba(0, 255, 255, 0.2)",
+                }}
               >
-                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-              </svg>
-              YouTube 頻道
-            </a>
+                <div className="flex items-center justify-between">
+                  <span
+                    className="font-display text-[10px] font-bold tracking-[2px] text-neon-cyan"
+                    style={{ textShadow: "0 0 8px #00ffff" }}
+                  >
+                    // 熱門話題
+                  </span>
+                  <Link
+                    href="/blog"
+                    className="font-tech text-[10px] text-neon-magenta transition-colors hover:text-neon-cyan"
+                    style={{ textShadow: "0 0 6px #ff00ff" }}
+                  >
+                    VIEW_ALL →
+                  </Link>
+                </div>
+              </div>
+
+              {latestPosts.slice(0, 5).map((post, i) => (
+                <Link
+                  key={post.slug}
+                  href={`/blog/${post.slug}`}
+                  className="group flex items-start gap-3 transition-colors hover:bg-[rgba(0,255,255,0.04)]"
+                  style={{
+                    padding: "11px 16px",
+                    borderBottom: "1px solid #0d0d1a",
+                  }}
+                >
+                  <span
+                    className="font-display text-[22px] font-black leading-none transition-colors group-hover:text-neon-cyan"
+                    style={{ color: "#111128" }}
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <span
+                      className="font-tech text-[9px] tracking-[1px]"
+                      style={{ color: "#ff00ff", textShadow: "0 0 6px #ff00ff" }}
+                    >
+                      // {post.category?.toUpperCase() || "ARTICLE"}
+                    </span>
+                    <h3 className="mt-0.5 font-body text-[14px] font-bold leading-snug text-[#8899bb] transition-colors group-hover:text-white truncate">
+                      {post.title}
+                    </h3>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== MAIN CONTENT + SIDEBAR ===== */}
+      <div className="mx-auto max-w-7xl">
+        <div className="flex flex-col lg:flex-row">
+          {/* Main feed */}
+          <div className="flex-1 px-4 py-8 sm:px-6 lg:px-8 lg:py-10" style={{ borderRight: "1px solid #0d0d1a" }}>
+            {/* Latest Videos */}
+            <div className="section-title">
+              最新影片 // LATEST_VIDEOS
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {latestVideos.map((video) => (
+                <VideoCard key={video.id} video={video} />
+              ))}
+            </div>
+
+            {/* Article List */}
+            <div className="section-title mt-10">
+              文章 // ARTICLES
+            </div>
+            <div>
+              {latestPosts.slice(0, 4).map((post) => (
+                <BlogCard key={post.slug} post={post} />
+              ))}
+            </div>
             <Link
-              href="/videos"
-              className="inline-flex items-center gap-2 rounded-lg border border-card-border px-6 py-3 font-semibold transition-colors hover:bg-surface-hover"
+              href="/blog"
+              className="mt-4 inline-block font-display text-[10px] font-bold tracking-[2px] text-neon-cyan transition-colors hover:text-white"
+              style={{ textShadow: "0 0 8px #00ffff" }}
             >
-              瀏覽影片
+              查看全部 // VIEW_ALL →
             </Link>
           </div>
-        </div>
-      </section>
 
-      {/* Latest Videos */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="flex items-end justify-between">
-          <div>
-            <h2 className="text-2xl font-bold sm:text-3xl tracking-[-0.02em]">
-              最新影片
-            </h2>
-            <p className="mt-1 text-muted">Latest Videos</p>
-          </div>
-          <Link
-            href="/videos"
-            className="text-sm font-medium text-accent hover:underline"
-          >
-            查看全部 →
-          </Link>
-        </div>
+          {/* Right sidebar */}
+          <div className="w-full shrink-0 px-4 py-8 lg:w-[300px] lg:px-5 lg:py-10">
+            {/* World Cup Countdown Widget */}
+            <div
+              className="neon-top-accent relative overflow-hidden"
+              style={{
+                background: "#06060f",
+                border: "1px solid rgba(0, 255, 255, 0.2)",
+              }}
+            >
+              <div
+                className="px-4 py-3"
+                style={{
+                  background: "rgba(0, 255, 255, 0.04)",
+                }}
+              >
+                <span
+                  className="font-display text-[10px] font-bold tracking-[2px] text-neon-cyan"
+                  style={{ textShadow: "0 0 8px #00ffff" }}
+                >
+                  // 2026_WORLD_CUP_COUNTDOWN
+                </span>
+              </div>
+              <div className="px-4 py-5">
+                <CountdownTimer />
+              </div>
+              <div className="px-4 pb-4">
+                <Link
+                  href="/world-cup"
+                  className="block w-full text-center font-display text-[10px] font-bold tracking-[2px] text-neon-cyan transition-all duration-200 hover:bg-[rgba(0,255,255,0.1)]"
+                  style={{
+                    border: "1px solid rgba(0, 255, 255, 0.4)",
+                    padding: "10px",
+                    textShadow: "0 0 8px #00ffff",
+                  }}
+                >
+                  [ 加入預測遊戲 → ]
+                </Link>
+              </div>
+            </div>
 
-        {videos[0] && (
-          <div className="mt-8 overflow-hidden rounded-xl card" style={{ padding: 0 }}>
-            <div className="relative aspect-video">
-              <iframe
-                src={`https://www.youtube.com/embed/${videos[0].youtubeId}`}
-                title={videos[0].title}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="absolute inset-0 h-full w-full"
+            {/* Author Card */}
+            <div
+              className="mt-6 relative overflow-hidden"
+              style={{
+                background: "#06060f",
+                border: "1px solid rgba(255, 0, 255, 0.2)",
+              }}
+            >
+              {/* Top accent */}
+              <div
+                className="h-[2px]"
+                style={{ background: "linear-gradient(90deg, #ff00ff, #00ffff)" }}
               />
+              <div className="p-5">
+                <div
+                  className="mx-auto flex h-16 w-16 items-center justify-center text-3xl"
+                  style={{
+                    border: "1px solid rgba(255, 0, 255, 0.4)",
+                    background: "rgba(255, 0, 255, 0.06)",
+                  }}
+                >
+                  ⚽
+                </div>
+                <div className="mt-3 text-center">
+                  <h3
+                    className="font-display text-[12px] font-bold tracking-[2px]"
+                    style={{ color: "#ff00ff", textShadow: "0 0 8px #ff00ff" }}
+                  >
+                    TOFU_李火光
+                  </h3>
+                  <p className="mt-2 font-tech text-[11px] text-[#3a4a5a] leading-relaxed">
+                    法國馬賽人，在台灣住了六年。用中文帶你走進足球的世界。
+                  </p>
+                </div>
+                <div className="mt-4 flex gap-2">
+                  <a
+                    href="https://www.youtube.com/@ToFootwn"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 text-center font-tech text-[9px] text-text-dim py-2 transition-colors hover:text-neon-cyan"
+                    style={{ border: "1px solid #0d0d22" }}
+                  >
+                    YOUTUBE
+                  </a>
+                  <a
+                    href="https://www.instagram.com/tofu_twn/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 text-center font-tech text-[9px] text-text-dim py-2 transition-colors hover:text-neon-magenta"
+                    style={{ border: "1px solid #0d0d22" }}
+                  >
+                    INSTAGRAM
+                  </a>
+                </div>
+              </div>
             </div>
-            <div className="p-4">
-              <h3 className="font-bold text-lg">{videos[0].title}</h3>
-              <p className="mt-1 text-sm text-muted">
-                {videos[0].description}
-              </p>
-            </div>
           </div>
-        )}
-
-        <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {videos.slice(1, 4).map((video) => (
-            <VideoCard key={video.id} video={video} />
-          ))}
         </div>
-      </section>
-
-      {/* World Cup CTA */}
-      <section className="relative border-y border-card-border overflow-hidden">
-        <div className="relative mx-auto max-w-7xl px-4 py-16 text-center sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-bold sm:text-3xl tracking-[-0.02em]">
-            🏆 2026 世界盃倒數
-          </h2>
-          <p className="mt-2 text-muted">
-            FIFA World Cup 2026 — USA, Mexico, Canada
-          </p>
-          <div className="mt-8">
-            <CountdownTimer />
-          </div>
-          <p className="mt-6 text-sm text-muted">
-            跟著 ToFoot 一起準備世界盃！每週更新各隊分析和預測。
-          </p>
-          <Link
-            href="/world-cup"
-            className="mt-6 inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 font-semibold text-white hover:bg-accent-hover transition-colors"
-          >
-            🏆 加入世界盃預測遊戲
-          </Link>
-        </div>
-      </section>
-
-      {/* Blog Posts */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="flex items-end justify-between">
-          <div>
-            <h2 className="text-2xl font-bold sm:text-3xl tracking-[-0.02em]">
-              文章
-            </h2>
-            <p className="mt-1 text-muted">Blog Posts</p>
-          </div>
-          <Link
-            href="/blog"
-            className="text-sm font-medium text-accent hover:underline"
-          >
-            查看全部 →
-          </Link>
-        </div>
-        <div className="mt-8 grid gap-4 lg:grid-cols-2">
-          {blogPosts.slice(0, 4).map((post) => (
-            <BlogCard key={post.slug} post={post} />
-          ))}
-        </div>
-      </section>
-
-      {/* About Tofu strip */}
-      <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
-        <div className="card flex flex-col items-center gap-4 text-center sm:flex-row sm:text-left">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-accent/10 text-3xl">
-            ⚽
-          </div>
-          <div className="flex-1">
-            <h3 className="text-lg font-bold">
-              Tofu 李火光{" "}
-              <span className="text-sm font-normal text-muted">
-                法國馬賽人，台灣六年
-              </span>
-            </h3>
-            <p className="mt-1 text-sm text-muted">
-              用母語文化背景和在台灣的生活經驗，帶更多台灣朋友走進足球的世界。
-            </p>
-          </div>
-          <Link
-            href="/about"
-            className="shrink-0 rounded-lg border border-card-border px-5 py-2 text-sm font-medium transition-colors hover:bg-surface-hover"
-          >
-            了解更多
-          </Link>
-        </div>
-      </section>
+      </div>
     </main>
   );
 }
