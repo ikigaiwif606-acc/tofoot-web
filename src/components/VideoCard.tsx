@@ -20,11 +20,24 @@ export default function VideoCard({ video }: { video: Video }) {
       className="group card card-interactive"
       style={{ padding: 0 }}
     >
-      <div className="scanlines relative" style={{ aspectRatio: "16/9" }}>
+      <div className="scanlines relative overflow-hidden" style={{ aspectRatio: "16/9" }}>
         <img
-          src={`https://img.youtube.com/vi/${video.youtubeId}/mqdefault.jpg`}
+          src={`https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`}
           alt={video.title}
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+        />
+        {/* Hover play overlay */}
+        <div className="video-play-overlay">
+          <div className="video-play-icon">
+            <svg className="h-5 w-5 text-neon-cyan ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </div>
+        </div>
+        {/* Bottom gradient for readability */}
+        <div
+          className="absolute inset-x-0 bottom-0 h-16 pointer-events-none"
+          style={{ background: "linear-gradient(transparent, rgba(0,0,0,0.6))" }}
         />
         {/* Duration badge */}
         <div
@@ -33,34 +46,17 @@ export default function VideoCard({ video }: { video: Video }) {
             background: "rgba(0, 0, 0, 0.85)",
             border: "1px solid rgba(0, 255, 255, 0.27)",
             color: "#00ffff",
-            textShadow: "0 0 6px #00ffff",
             padding: "2px 8px",
           }}
         >
           {video.duration}
         </div>
-        {/* Play button */}
-        <div
-          className="absolute bottom-2 right-2 font-display text-[9px] font-bold tracking-[1px]"
-          style={{
-            background: "rgba(255, 0, 255, 0.15)",
-            border: "1px solid rgba(255, 0, 255, 0.4)",
-            color: "#ff00ff",
-            textShadow: "0 0 6px #ff00ff",
-            padding: "3px 10px",
-          }}
-        >
-          PLAY ▶
-        </div>
       </div>
       <div className="p-4">
-        <div
-          className="font-tech text-[9px] tracking-[1px]"
-          style={{ color: "#ffee00", textShadow: "0 0 5px #ffee00" }}
-        >
+        <div className="font-tech text-[9px] tracking-[1px] text-neon-yellow">
           // {categoryLabels[video.category] || video.category.toUpperCase()}
         </div>
-        <h3 className="mt-2 font-body text-[14px] font-bold uppercase leading-snug text-[#8899bb] transition-colors duration-200 group-hover:text-white">
+        <h3 className="mt-2 font-body text-[14px] font-bold leading-snug text-[#8899bb] transition-colors duration-200 group-hover:text-white">
           {video.title}
         </h3>
         <div className="mt-2 font-tech text-[10px] text-text-ghost">

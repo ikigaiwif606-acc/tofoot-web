@@ -29,14 +29,8 @@ export default function Button({
 }: ButtonProps) {
   return (
     <button
-      className={`inline-flex items-center justify-center ${variants[variant]} ${sizes[size]} ${className}`}
-      style={
-        variant === "primary"
-          ? { textShadow: "0 0 8px #00ffff" }
-          : variant === "danger"
-            ? { textShadow: "0 0 8px #ff00ff" }
-            : undefined
-      }
+      className={`btn-press inline-flex items-center justify-center ${variants[variant]} ${sizes[size]} ${className}`}
+      style={undefined}
       {...props}
     >
       {children}

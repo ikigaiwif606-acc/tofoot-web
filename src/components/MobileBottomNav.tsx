@@ -66,11 +66,12 @@ export default function MobileBottomNav() {
             <Link
               key={tab.href}
               href={tab.href}
-              className={`flex flex-col items-center gap-0.5 px-3 py-1.5 font-display text-[8px] font-bold tracking-[1px] transition-colors ${
+              className={`flex flex-col items-center gap-1 px-4 py-2 font-display text-[9px] font-bold tracking-[1px] transition-colors ${
                 active
                   ? "text-neon-cyan"
                   : "text-text-dim"
               }`}
+              style={active ? { textShadow: "0 0 8px #00ffff" } : undefined}
             >
               {tab.icon}
               {tab.label}
